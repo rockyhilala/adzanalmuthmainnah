@@ -5,23 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Aplikasi Adzan Al-Muthmainnah</title>
   <link rel="icon" href="data:,">
-  <!-- Ganti CDN dengan file lokal -->
-  <script src="js/bootstrap.bundle.min.js"></script>
-  <script src="js/NoSleep.min.js"></script>
-  <script src="js/cloudinary.js"></script>
-  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!--CDN UNTUK LAYAR TETAP AKTIF-->
+  <script src="https://cdn.jsdelivr.net/npm/nosleep.js@0.12.0/dist/NoSleep.min.js"></script>
   <!-- Sertakan prayTimes.js secara lokal. Pastikan file "prayTimes.js" ada di lokasi ini -->
-  <script src="js/prayTimes.js"></script>
-
-  <meta http-equiv="Content-Security-Policy" 
-  content="default-src 'self' https://script.google.com https://api.aladhan.com https://stream-node1.rri.co.id https://www.youtube.com https://cdn.jsdelivr.net; 
-           script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; 
-           style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; 
-           img-src 'self' data: https:; 
-           media-src 'self' https://stream-node1.rri.co.id; 
-           connect-src 'self' https://script.google.com https://api.aladhan.com https://script.googleusercontent.com; 
-           frame-src 'self' https://www.youtube.com;">
-
+  <script src="prayTimes.js"></script>
   <style>
     /* Hilangkan scrollbar vertikal dan horizontal */
     html, body {
@@ -350,7 +339,14 @@
     align-items: center;
     justify-content: center;
   ">
-
+    <div style="
+      background-image: url(icon.png);
+      width: 180px; /* Sesuaikan dengan ukuran logo */
+      height: 180px; /* Sesuaikan dengan ukuran logo */
+      background-size: contain; /* Atau gunakan background-size: cover, tergantung kebutuhan */
+      background-repeat: no-repeat;
+      background-position: center;
+    "></div>
   </div>
   
   
@@ -381,8 +377,8 @@
       <div class="col-12 col-md-4 d-flex align-items-center justify-content-center mb-2 mb-md-0">
         <img id="masjidLogo" src="logo.png" alt="Logo Masjid" class="img-fluid me-2">
         <div>
-          <h2 id="masjidName" class="mb-0" style="font-weight: bold;">Nama Masjid</h2>
-          <p id="masjidAddress" class="mb-0" style="font-size: 16px;">Alamat Masjid</p>
+          <h2 id="masjidName" class="mb-0" style="font-weight: bold;">Al-Muthmainnah</h2>
+          <p id="masjidAddress" class="mb-0" style="font-size: 16px;">Desa Toluwaya, Bulango Timur</p>
         </div>
       </div>
       <!-- Kanan: Jam dan Tombol Burger -->
@@ -797,15 +793,17 @@
   </div>
 
   <!-- Audio -->
-  <audio id="audioShalawat" src="audio/shalawat.m4a" loop></audio>
-  <audio id="audioAdzan" src="audio/adzan.mp3"></audio>
-  <audio id="audioBeep" src="audio/beep.mp3"></audio>
-  <audio id="audioRooster" src="audio/rooster.mp3"></audio>
+  <audio id="audioShalawat" src="shalawat.m4a" loop></audio>
+  <audio id="audioAdzan" src="adzan.mp3"></audio>
+  <audio id="audioBeep" src="beep.mp3"></audio>
+  <audio id="audioRooster" src="rooster.mp3"></audio>
   <!-- Audio untuk Radio -->
   <audio id="audioRadio" src="https://stream-node1.rri.co.id/streaming/15/9115/rrigorontalopro1.mp3"></audio>
   <!-- Audio untuk Radio -->
 <audio id="audioRadio2"></audio>
 
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
   
   <!-- Script JavaScript -->
   <script>
@@ -2407,38 +2405,50 @@ let wakeLockInterval;
 
 function enableAggressiveWakeLock() {
   // Method 1: NoSleep.js dengan video transparan
-  try {
-    noSleep = new NoSleep();
-    noSleep.enable().catch(err => {
-      console.warn('NoSleep.js error:', err);
-    });
-  } catch (e) {
-    console.warn('NoSleep.js tidak tersedia');
-  }
+  noSleep = new NoSleep();
+  noSleep.enable().catch(err => {
+    console.error('NoSleep.js error:', err);
+  });
 
   // Method 2: Wake Lock API Modern
   if ('wakeLock' in navigator) {
     navigator.wakeLock.request('screen').then(wl => {
       wakeLock = wl;
       console.log('Wake Lock API aktif!');
-    }).catch(err => {
-      console.warn('Wake Lock API tidak didukung:', err);
     });
   }
 
-  // Method 3: Simulasi interaksi pengguna setiap 30 detik (kurangi frekuensi)
+  // Method 3: Simulasi interaksi pengguna setiap 10 detik
   wakeLockInterval = setInterval(() => {
-    // Gunakan metode yang lebih aman
-    try {
-      window.scrollBy(0, 1);
-      setTimeout(() => window.scrollBy(0, -1), 50);
-    } catch (e) {
-      console.warn('Simulasi scroll gagal');
-    }
-  }, 30000); // 30 detik lebih aman
+    // Simulasi touch event
+    const touchEvent = new TouchEvent('touchend', {
+      touches: [new Touch({ identifier: 'keepalive', target: document.body })],
+      bubbles: true,
+      cancelable: false
+    });
+    document.dispatchEvent(touchEvent);
+    
+    // Simulasi mouse movement
+    window.scrollBy(0, 1);
+    setTimeout(() => window.scrollBy(0, -1), 50);
+  }, 10000);
 
-  // HAPUS Method 4 (Video Heartbeat) karena melanggar CSP
-  // Jangan gunakan video data URL
+  // Method 4: Video heartbeat tersembunyi
+  const stealthVideo = document.createElement('video');
+  stealthVideo.setAttribute('muted', '');
+  stealthVideo.setAttribute('playsinline', '');
+  stealthVideo.style.cssText = 'position:fixed;top:-10px;left:-10px;opacity:0;pointer-events:none;width:1px;height:1px;';
+  
+  const source = document.createElement('source');
+  source.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAVxtZGF0AAAAMg8FBv9GgZ3B+enp4XBhYWFiYWJhYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiakaaZk=';
+  source.type = 'video/mp4';
+  
+  stealthVideo.appendChild(source);
+  document.body.appendChild(stealthVideo);
+  
+  stealthVideo.play().catch(err => {
+    console.error('Video heartbeat error:', err);
+  });
 }
 
 // ==================== FULLSCREEN MANAGEMENT ====================
@@ -2607,6 +2617,34 @@ function compressImage(url) {
     });
 }
 
+// Example usage of compressImage in your fetch call
+fetch(appsScriptUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(data)
+    })
+  .then(response => response.json())
+  .then(data => {
+    let innerHtml = ''; // To accumulate the images
+    data.DataMedia.forEach((item, index) => {
+      if (item.Media.toLowerCase() === "gambar") {
+        compressImage(item.Url)
+          .then((blob) => {
+            const url = URL.createObjectURL(blob); // Create URL from blob
+            innerHtml += `<img src="${url}" class="d-block w-100" alt="Slide ${index + 1}">`;
+            document.getElementById('imageContainer').innerHTML = innerHtml; // Add images to the page
+          })
+          .catch((error) => {
+            console.error('Gagal mengonversi gambar:', error);
+          });
+      }
+    });
+  })
+  .catch(err => {
+    console.error("Error fetching data:", err);
+  });
+
+
 
   // Fungsi pembantu untuk memformat sisa waktu (mm:ss)
   function formatTime(ms) {
@@ -2726,34 +2764,7 @@ function compressImage(url) {
     }
   });
 
-  // Tambahkan error handling untuk external resources
-  function loadExternalResource(url, element, callback) {
-      fetch(url)
-          .then(response => {
-              if (!response.ok) throw new Error('Network response was not ok');
-              return response.text();
-          })
-          .then(data => {
-              if (element === 'script') {
-                  const script = document.createElement('script');
-                  script.textContent = data;
-                  document.head.appendChild(script);
-              } else if (element === 'style') {
-                  const style = document.createElement('style');
-                  style.textContent = data;
-                  document.head.appendChild(style);
-              }
-              if (callback) callback();
-          })
-          .catch(error => {
-              console.error('Error loading resource:', error);
-              // Fallback ke resource lokal jika ada
-              if (callback) callback();
-          });
-  }
-
 
 </script>
 </body>
 </html>
-
