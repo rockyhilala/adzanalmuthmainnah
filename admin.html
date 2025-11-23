@@ -11,36 +11,88 @@
   <!-- Cloudinary Upload Widget -->
   <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
   <style>
+    :root {
+      --primary-color: #005a31;
+      --secondary-color: #f8f9fa;
+      --container-width-desktop: 360px;
+    }
+
     body {
-      background-color: #f8f9fa;
+      background-color: var(--secondary-color);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-    }
-    .admin-container {
-      max-width: 360px;
-      margin: 0 auto;
+      align-items: center;
+      justify-content: center;
       padding: 15px;
-      background-color: white;
-      min-height: 100vh;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+
+    /* Container untuk Desktop */
+    .admin-container {
+        max-width: var(--container-width-desktop);
+        width: 100%;
+        margin: 0 auto;
+        padding: 15px;
+        background-color: white;
+        min-height: 100vh;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        position: relative; /* Tambahkan ini */
+    }
+
+    /* Container untuk Mobile */
+    @media (max-width: 576px) {
+      body {
+        padding: 0;
+        background-color: white;
+      }
+      
+      .admin-container {
+        max-width: 100%;
+        min-height: 100vh;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    /* Untuk tablet (lebar sedang) */
+    @media (min-width: 577px) and (max-width: 768px) {
+      .admin-container {
+        max-width: 500px;
+      }
+    }
+
     .header {
-      background-color: #005a31;
+      background-color: var(--primary-color);
       color: white;
       padding: 10px;
       border-radius: 8px;
       margin-bottom: 20px;
     }
+    
     .header img {
       max-height: 40px;
     }
+    
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 15px;
       margin-bottom: 20px;
     }
+    
+    /* Menu grid responsif untuk mobile */
+    @media (max-width: 576px) {
+      .menu-grid {
+        gap: 10px;
+      }
+    }
+    
     .menu-btn {
       height: 120px;
       display: flex;
@@ -52,15 +104,18 @@
       background-color: #e9ecef;
       transition: all 0.3s;
     }
+    
     .menu-btn:hover {
-      background-color: #005a31;
+      background-color: var(--primary-color);
       color: white;
       transform: translateY(-5px);
     }
+    
     .menu-btn i {
       font-size: 2rem;
       margin-bottom: 10px;
     }
+    
     .footer {
       margin-top: auto;
       padding: 10px;
@@ -69,102 +124,116 @@
       border-radius: 8px;
       font-size: 14px;
     }
+    
+    /* Modal responsif */
     .modal-content {
       max-height: 80vh;
       overflow-y: auto;
     }
+    
+    @media (max-width: 576px) {
+      .modal-dialog {
+        margin: 10px;
+      }
+    }
+    
     .form-section {
       margin-bottom: 20px;
       padding-bottom: 15px;
       border-bottom: 1px solid #dee2e6;
     }
+    
     .table-responsive {
       max-height: 300px;
       overflow-y: auto;
     }
+    
     .cloudinary-btn {
       background-color: #3448c5;
       border-color: #3448c5;
       color: white;
     }
+    
     .cloudinary-btn:hover {
       background-color: #2a3aa3;
       border-color: #2a3aa3;
       color: white;
     }
+    
     .image-preview {
       max-width: 100%;
       max-height: 200px;
       margin-top: 10px;
       border-radius: 5px;
     }
+    
     /* Style untuk tabel editable */
     .editable-cell {
-    min-height: 40px;
-    padding: 8px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    transition: all 0.2s;
+      min-height: 40px;
+      padding: 8px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      transition: all 0.2s;
     }
-
+    
     .editable-cell:focus {
-    border-color: #005a31;
-    background-color: #f8fff8;
-    outline: none;
+      border-color: var(--primary-color);
+      background-color: #f8fff8;
+      outline: none;
     }
-
+    
     .editable-cell:hover {
-    background-color: #f8f9fa;
+      background-color: #f8f9fa;
     }
-
+    
     .logo-preview {
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    padding: 4px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 4px;
     }
-
+    
     /* Dropzone style */
     #logoDropzone {
-    border: 2px dashed #dee2e6;
-    background-color: #f8f9fa;
-    transition: all 0.3s;
+      border: 2px dashed #dee2e6;
+      background-color: #f8f9fa;
+      transition: all 0.3s;
     }
-
+    
     #logoDropzone:hover {
-    border-color: #005a31;
-    background-color: #f0fff0;
+      border-color: var(--primary-color);
+      background-color: #f0fff0;
     }
-
+    
     /* Tombol hapus logo */
     .btn-danger.position-absolute {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    padding: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      padding: 0;
     }
-
+    
     /* Style untuk input form data masjid */
     #namaMasjidInput, #alamatMasjidInput {
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 8px;
-    width: 100%;
-    transition: all 0.2s;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      padding: 8px;
+      width: 100%;
+      transition: all 0.2s;
     }
-
+    
     #namaMasjidInput:focus, #alamatMasjidInput:focus {
-    border-color: #005a31;
-    box-shadow: 0 0 0 0.2rem rgba(0, 90, 49, 0.25);
-    outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(0, 90, 49, 0.25);
+      outline: none;
     }
-
+    
     /* Tombol simpan */
     #saveDataMasjidBtn {
-    min-width: 150px;
+      min-width: 150px;
     }
   </style>
 </head>
@@ -175,7 +244,8 @@
       <img src="icon.png" alt="Logo" class="me-2">
       <h4 class="mb-0">Remote</h4>
     </div>
-
+<!-- Menu Grid - TAMBAHKAN div wrapper -->
+<div class="menu-content">
     <!-- Menu Grid -->
     <div class="menu-grid">
       <!-- Data Masjid -->
@@ -214,103 +284,103 @@
         <span>Hari Islam</span>
       </button>
     </div>
-
+</div>
     <!-- Footer -->
     <div class="footer">
-      0821xxxxxxxxxxx | RH
+      089601875023 | RH
     </div>
   </div>
 
-    <!-- Modal Data Masjid -->
-    <div class="modal fade" id="dataMasjidModal" tabindex="-1" aria-labelledby="dataMasjidModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="dataMasjidModalLabel">Data Masjid</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <!-- Modal Data Masjid -->
+  <div class="modal fade" id="dataMasjidModal" tabindex="-1" aria-labelledby="dataMasjidModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="dataMasjidModalLabel">Data Masjid</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-dark">
+                <tr>
+                  <th>Nama Masjid</th>
+                  <th>Alamat</th>
+                  <th>Logo</th>
+                </tr>
+              </thead>
+              <tbody id="dataMasjidTable">
+                <!-- Data akan dimuat di sini -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Dropzone untuk upload logo baru -->
+          <div id="logoDropzone" class="mt-3 border rounded p-3 text-center" style="display: none;">
+            <p class="mb-2">Drop gambar di sini atau klik untuk upload logo baru</p>
+            <button type="button" class="btn cloudinary-btn" id="uploadNewLogoBtn">
+              <i class="bi bi-cloud-upload"></i> Upload Logo Baru
+            </button>
+            <input type="hidden" id="newLogoUrl">
+          </div>
+
+          <!-- TAMBAHAN: Tombol Simpan -->
+          <div class="mt-3 text-end">
+            <button type="button" class="btn btn-primary" id="saveDataMasjidBtn">
+              <i class="bi bi-check-lg"></i> Simpan Perubahan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Data Media -->
+  <div class="modal fade" id="dataMediaModal" tabindex="-1" aria-labelledby="dataMediaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="dataMediaModalLabel">Data Media</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="dataMediaForm">
+            <div class="mb-3">
+              <label for="jenisMedia" class="form-label">Jenis Media</label>
+              <select class="form-select" id="jenisMedia" required>
+                <option value="gambar">Gambar</option>
+              </select>
             </div>
-            <div class="modal-body">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                    <th>Nama Masjid</th>
-                    <th>Alamat</th>
-                    <th>Logo</th>
-                    </tr>
-                </thead>
-                <tbody id="dataMasjidTable">
-                    <!-- Data akan dimuat di sini -->
-                </tbody>
-                </table>
+            <div class="mb-3">
+              <label class="form-label">Media</label>
+              <div>
+                <button type="button" class="btn cloudinary-btn" id="uploadMediaBtn">
+                  <i class="bi bi-cloud-upload"></i> Upload Gambar
+                </button>
+                <input type="hidden" id="mediaUrl">
+              </div>
+              <!-- TAMBAHAN: Keterangan ukuran gambar -->
+              <div class="form-text text-danger">*Gambar maksimal 3MB</div>
+              <div id="mediaPreviewContainer" class="mt-2" style="display: none;">
+                <img id="mediaPreview" class="image-preview" src="" alt="Preview Media">
+                <button type="button" class="btn btn-sm btn-danger mt-1" id="removeMediaBtn">Hapus Media</button>
+              </div>
             </div>
             
-            <!-- Dropzone untuk upload logo baru -->
-            <div id="logoDropzone" class="mt-3 border rounded p-3 text-center" style="display: none;">
-                <p class="mb-2">Drop gambar di sini atau klik untuk upload logo baru</p>
-                <button type="button" class="btn cloudinary-btn" id="uploadNewLogoBtn">
-                <i class="bi bi-cloud-upload"></i> Upload Logo Baru
-                </button>
-                <input type="hidden" id="newLogoUrl">
+            <!-- TAMBAHAN: Preview gambar yang sudah ada -->
+            <div class="mb-3">
+              <label class="form-label">Gambar yang Tersimpan (Maksimal 5)</label>
+              <div id="savedMediaList" class="row g-2">
+                <!-- Gambar akan dimuat di sini -->
+              </div>
             </div>
-
-            <!-- TAMBAHAN: Tombol Simpan -->
-            <div class="mt-3 text-end">
-                <button type="button" class="btn btn-primary" id="saveDataMasjidBtn">
-                <i class="bi bi-check-lg"></i> Simpan Perubahan
-                </button>
-            </div>
-            </div>
+            
+            <button type="submit" class="btn btn-primary">Simpan</button>
+          </form>
         </div>
-        </div>
+      </div>
     </div>
-
-    <!-- Modal Data Media -->
-    <div class="modal fade" id="dataMediaModal" tabindex="-1" aria-labelledby="dataMediaModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="dataMediaModalLabel">Data Media</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-            <form id="dataMediaForm">
-                <div class="mb-3">
-                <label for="jenisMedia" class="form-label">Jenis Media</label>
-                <select class="form-select" id="jenisMedia" required>
-                    <option value="gambar">Gambar</option>
-                </select>
-                </div>
-                <div class="mb-3">
-                <label class="form-label">Media</label>
-                <div>
-                    <button type="button" class="btn cloudinary-btn" id="uploadMediaBtn">
-                    <i class="bi bi-cloud-upload"></i> Upload Gambar
-                    </button>
-                    <input type="hidden" id="mediaUrl">
-                </div>
-                <!-- TAMBAHAN: Keterangan ukuran gambar -->
-                <div class="form-text text-danger">*Gambar maksimal 3MB</div>
-                <div id="mediaPreviewContainer" class="mt-2" style="display: none;">
-                    <img id="mediaPreview" class="image-preview" src="" alt="Preview Media">
-                    <button type="button" class="btn btn-sm btn-danger mt-1" id="removeMediaBtn">Hapus Media</button>
-                </div>
-                </div>
-                
-                <!-- TAMBAHAN: Preview gambar yang sudah ada -->
-                <div class="mb-3">
-                <label class="form-label">Gambar yang Tersimpan (Maksimal 5)</label>
-                <div id="savedMediaList" class="row g-2">
-                    <!-- Gambar akan dimuat di sini -->
-                </div>
-                </div>
-                
-                <button type="submit" class="btn btn-primary">Simpan</button>
-            </form>
-            </div>
-        </div>
-        </div>
-    </div>
+  </div>
 
   <!-- Modal Menu Countdown -->
   <div class="modal fade" id="countdownMenuModal" tabindex="-1" aria-labelledby="countdownMenuModalLabel" aria-hidden="true">
@@ -538,55 +608,55 @@
     </div>
   </div>
 
-    <!-- Modal Teks Tambahan -->
-    <div class="modal fade" id="teksTambahanModal" tabindex="-1" aria-labelledby="teksTambahanModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="teksTambahanModalLabel">Teks Tambahan</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-            <!-- HAPUS TABEL DAN TOMBOL TAMBAH -->
-            <div class="alert alert-info">
-                <p class="mb-0">Teks tambahan saat ini:</p>
-                <div id="currentTeksTambahan" class="mt-2">
-                <!-- Data teks tambahan akan dimuat di sini -->
-                </div>
-            </div>
-            <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#teksTambahanFormModal">
-                Edit Teks Tambahan
-            </button>
-            </div>
+  <!-- Modal Teks Tambahan -->
+  <div class="modal fade" id="teksTambahanModal" tabindex="-1" aria-labelledby="teksTambahanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="teksTambahanModalLabel">Teks Tambahan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+          <!-- HAPUS TABEL DAN TOMBOL TAMBAH -->
+          <div class="alert alert-info">
+            <p class="mb-0">Teks tambahan saat ini:</p>
+            <div id="currentTeksTambahan" class="mt-2">
+              <!-- Data teks tambahan akan dimuat di sini -->
+            </div>
+          </div>
+          <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#teksTambahanFormModal">
+            Edit Teks Tambahan
+          </button>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Modal Form Teks Tambahan -->
-    <div class="modal fade" id="teksTambahanFormModal" tabindex="-1" aria-labelledby="teksTambahanFormModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="teksTambahanFormModalLabel">Teks Tambahan</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-            <form id="teksTambahanForm">
-                <!-- Hapus input hidden id karena tidak diperlukan lagi -->
-                <div class="mb-3">
-                <label for="judulTeks" class="form-label">Judul</label>
-                <input type="text" class="form-control" id="judulTeks" required>
-                </div>
-                <div class="mb-3">
-                <label for="keteranganTeks" class="form-label">Keterangan</label>
-                <textarea class="form-control" id="keteranganTeks" rows="3" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Simpan</button>
-            </form>
-            </div>
+  <!-- Modal Form Teks Tambahan -->
+  <div class="modal fade" id="teksTambahanFormModal" tabindex="-1" aria-labelledby="teksTambahanFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="teksTambahanFormModalLabel">Teks Tambahan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <div class="modal-body">
+          <form id="teksTambahanForm">
+            <!-- Hapus input hidden id karena tidak diperlukan lagi -->
+            <div class="mb-3">
+              <label for="judulTeks" class="form-label">Judul</label>
+              <input type="text" class="form-control" id="judulTeks" required>
+            </div>
+            <div class="mb-3">
+              <label for="keteranganTeks" class="form-label">Keterangan</label>
+              <textarea class="form-control" id="keteranganTeks" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 
   <!-- Modal Quran -->
   <div class="modal fade" id="quranModal" tabindex="-1" aria-labelledby="quranModalLabel" aria-hidden="true">
@@ -855,30 +925,30 @@
       }
     });
 
-// Fungsi untuk mengirim data form ke Apps Script
-async function submitForm(formData, type, closeModal = true) {
-  try {
-    const response = await fetch(appsScriptUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify({...formData, type})
-    });
-    
-    showToast('Data berhasil disimpan!');
-    
-    // Hanya tutup modal jika closeModal = true
-    if (closeModal) {
-      const modal = bootstrap.Modal.getInstance(document.querySelector('.modal.show'));
-      if (modal) modal.hide();
+    // Fungsi untuk mengirim data form ke Apps Script
+    async function submitForm(formData, type, closeModal = true) {
+      try {
+        const response = await fetch(appsScriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify({...formData, type})
+        });
+        
+        showToast('Data berhasil disimpan!');
+        
+        // Hanya tutup modal jika closeModal = true
+        if (closeModal) {
+          const modal = bootstrap.Modal.getInstance(document.querySelector('.modal.show'));
+          if (modal) modal.hide();
+        }
+        
+        return true;
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Terjadi kesalahan saat menyimpan data', 'error');
+        return false;
+      }
     }
-    
-    return true;
-  } catch (error) {
-    console.error('Error:', error);
-    showToast('Terjadi kesalahan saat menyimpan data', 'error');
-    return false;
-  }
-}
 
     // Event listener untuk form Data Media
     document.getElementById('dataMediaForm').addEventListener('submit', function(e) {
@@ -981,70 +1051,70 @@ async function submitForm(formData, type, closeModal = true) {
 
     // Fungsi untuk memuat data masjid ke tabel
     async function loadDataMasjid() {
-    try {
+      try {
         const response = await fetch(`${appsScriptUrl}?type=datamasjid`);
         const data = await response.json();
         const tableBody = document.getElementById('dataMasjidTable');
         
         tableBody.innerHTML = `
-        <tr>
+          <tr>
             <td>
-            <input type="text" class="form-control" id="namaMasjidInput" value="${data.NamaMasjid || ''}" placeholder="Masukkan nama masjid">
+              <input type="text" class="form-control" id="namaMasjidInput" value="${data.NamaMasjid || ''}" placeholder="Masukkan nama masjid">
             </td>
             <td>
-            <textarea class="form-control" id="alamatMasjidInput" rows="2" placeholder="Masukkan alamat masjid">${data.Alamat || ''}</textarea>
+              <textarea class="form-control" id="alamatMasjidInput" rows="2" placeholder="Masukkan alamat masjid">${data.Alamat || ''}</textarea>
             </td>
             <td>
-            ${data.Logo ? `
+              ${data.Logo ? `
                 <div class="position-relative d-inline-block">
-                <img src="${data.Logo}" alt="Logo Masjid" class="logo-preview" style="max-height: 80px; max-width: 150px;">
-                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" onclick="removeLogo()" style="transform: translate(30%, -30%);">
+                  <img src="${data.Logo}" alt="Logo Masjid" class="logo-preview" style="max-height: 80px; max-width: 150px;">
+                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" onclick="removeLogo()" style="transform: translate(30%, -30%);">
                     <i class="bi bi-x"></i>
-                </button>
+                  </button>
                 </div>
-            ` : `
+              ` : `
                 <div class="text-center">
-                <p class="text-muted mb-2">Belum ada logo</p>
-                <button type="button" class="btn cloudinary-btn btn-sm" id="uploadInitialLogoBtn">
+                  <p class="text-muted mb-2">Belum ada logo</p>
+                  <button type="button" class="btn cloudinary-btn btn-sm" id="uploadInitialLogoBtn">
                     <i class="bi bi-cloud-upload"></i> Upload Logo
-                </button>
+                  </button>
                 </div>
-            `}
+              `}
             </td>
-        </tr>
+          </tr>
         `;
         
         // Inisialisasi upload logo
         initMasjidLogoUpload();
         
-    } catch (error) {
+      } catch (error) {
         console.error('Error loading data masjid:', error);
         showToast('Gagal memuat data masjid');
-    }
+      }
     }
 
     // Fungsi untuk menyimpan data masjid (manual dengan tombol)
     async function saveDataMasjid() {
-    try {
+      try {
         const data = {
-        NamaMasjid: document.getElementById('namaMasjidInput').value.trim(),
-        Alamat: document.getElementById('alamatMasjidInput').value.trim()
+          NamaMasjid: document.getElementById('namaMasjidInput').value.trim(),
+          Alamat: document.getElementById('alamatMasjidInput').value.trim()
         };
         
         // Tambahkan logo jika ada
         const logoUrl = document.getElementById('newLogoUrl').value;
         if (logoUrl) {
-        data.Logo = logoUrl;
+          data.Logo = logoUrl;
         }
         
         if (!data.NamaMasjid) {
-        showToast('Nama masjid harus diisi', 'error');
-        return;
+          showToast('Nama masjid harus diisi', 'error');
+          return;
         }
         
         if (!data.Alamat) {
-        showToast('Alamat masjid harus diisi', 'error');
-        return;
+          showToast('Alamat masjid harus diisi', 'error');
+          return;
         }
         
         await submitForm(data, 'datamasjid');
@@ -1056,19 +1126,19 @@ async function submitForm(formData, type, closeModal = true) {
         // Reload data untuk menampilkan logo baru
         loadDataMasjid();
         
-    } catch (error) {
+      } catch (error) {
         console.error('Error saving data masjid:', error);
         showToast('Gagal menyimpan data masjid');
-    }
+      }
     }
 
     // Fungsi untuk menghapus logo
     function removeLogo() {
-    if (confirm('Apakah Anda yakin ingin menghapus logo?')) {
+      if (confirm('Apakah Anda yakin ingin menghapus logo?')) {
         const data = {
-        NamaMasjid: document.getElementById('namaMasjidInput').value,
-        Alamat: document.getElementById('alamatMasjidInput').value,
-        Logo: '' // Kosongkan logo
+          NamaMasjid: document.getElementById('namaMasjidInput').value,
+          Alamat: document.getElementById('alamatMasjidInput').value,
+          Logo: '' // Kosongkan logo
         };
         
         // Tampilkan dropzone untuk upload logo baru
@@ -1079,42 +1149,42 @@ async function submitForm(formData, type, closeModal = true) {
         
         // Reload data setelah beberapa detik
         setTimeout(() => {
-        loadDataMasjid();
+          loadDataMasjid();
         }, 1000);
-    }
+      }
     }
 
     // Fungsi untuk inisialisasi upload logo
     function initMasjidLogoUpload() {
-    // Upload logo awal
-    if (document.getElementById('uploadInitialLogoBtn')) {
+      // Upload logo awal
+      if (document.getElementById('uploadInitialLogoBtn')) {
         initCloudinaryWidget(
-        'uploadInitialLogoBtn',
-        null,
-        'newLogoUrl',
-        null,
-        null
+          'uploadInitialLogoBtn',
+          null,
+          'newLogoUrl',
+          null,
+          null
         );
-    }
-    
-    // Upload logo baru (setelah hapus)
-    initCloudinaryWidget(
+      }
+      
+      // Upload logo baru (setelah hapus)
+      initCloudinaryWidget(
         'uploadNewLogoBtn',
         null,
         'newLogoUrl',
         null,
         null
-    );
+      );
     }
 
     // Event listener untuk tombol simpan data masjid
     document.getElementById('saveDataMasjidBtn').addEventListener('click', function() {
-    saveDataMasjid();
+      saveDataMasjid();
     });
 
     // Event listener untuk modal Data Masjid
     document.getElementById('dataMasjidModal').addEventListener('show.bs.modal', function() {
-    loadDataMasjid();
+      loadDataMasjid();
     });
 
     // Fungsi untuk memuat data ke tabel
@@ -1146,94 +1216,94 @@ async function submitForm(formData, type, closeModal = true) {
 
     // Fungsi untuk memuat dan menampilkan gambar yang sudah disimpan
     async function loadSavedMedia() {
-        try {
-            const data = await fetchData('datamedia');
-            const container = document.getElementById('savedMediaList');
-            container.innerHTML = '';
-            
-            // Batasi hanya 5 gambar terbaru
-            const limitedData = data.slice(0, 5);
-            
-            limitedData.forEach((item, index) => {
-            if (item.Url) {
-                const col = document.createElement('div');
-                col.className = 'col-6 col-md-4';
-                col.innerHTML = `
-                <div class="card">
-                    <img src="${item.Url}" class="card-img-top" style="height: 100px; object-fit: cover;" alt="Media ${index + 1}">
-                    <div class="card-body p-2">
-                    <small class="card-text d-block">${item.JenisMedia}</small>
-                    <button type="button" class="btn btn-sm btn-danger w-100" onclick="deleteMedia(${index})">Hapus</button>
-                    </div>
+      try {
+        const data = await fetchData('datamedia');
+        const container = document.getElementById('savedMediaList');
+        container.innerHTML = '';
+        
+        // Batasi hanya 5 gambar terbaru
+        const limitedData = data.slice(0, 5);
+        
+        limitedData.forEach((item, index) => {
+          if (item.Url) {
+            const col = document.createElement('div');
+            col.className = 'col-6 col-md-4';
+            col.innerHTML = `
+              <div class="card">
+                <img src="${item.Url}" class="card-img-top" style="height: 100px; object-fit: cover;" alt="Media ${index + 1}">
+                <div class="card-body p-2">
+                  <small class="card-text d-block">${item.JenisMedia}</small>
+                  <button type="button" class="btn btn-sm btn-danger w-100" onclick="deleteMedia(${index})">Hapus</button>
                 </div>
-                `;
-                container.appendChild(col);
-            }
-            });
-            
-            // Tampilkan pesan jika tidak ada gambar
-            if (limitedData.length === 0) {
-            container.innerHTML = '<div class="col-12"><p class="text-muted text-center">Belum ada gambar</p></div>';
-            }
-        } catch (error) {
-            console.error('Error loading saved media:', error);
+              </div>
+            `;
+            container.appendChild(col);
+          }
+        });
+        
+        // Tampilkan pesan jika tidak ada gambar
+        if (limitedData.length === 0) {
+          container.innerHTML = '<div class="col-12"><p class="text-muted text-center">Belum ada gambar</p></div>';
         }
+      } catch (error) {
+        console.error('Error loading saved media:', error);
+      }
     }
 
     // Fungsi untuk memuat data teks tambahan
     async function loadTeksTambahan() {
-        try {
-            const data = await fetchData('teksTambahan');
-            const container = document.getElementById('currentTeksTambahan');
-            
-            if (data && data.length > 0) {
-            const teks = data[0]; // Ambil data pertama (satu-satunya)
-            container.innerHTML = `
-                <strong>${teks.Judul || '-'}</strong>
-                <p class="mb-0">${teks.Keterangan || '-'}</p>
-            `;
-            
-            // Isi form dengan data yang ada
-            document.getElementById('judulTeks').value = teks.Judul || '';
-            document.getElementById('keteranganTeks').value = teks.Keterangan || '';
-            } else {
-            container.innerHTML = '<p class="text-muted mb-0">Belum ada teks tambahan</p>';
-            // Kosongkan form
-            document.getElementById('judulTeks').value = '';
-            document.getElementById('keteranganTeks').value = '';
-            }
-        } catch (error) {
-            console.error('Error loading teks tambahan:', error);
+      try {
+        const data = await fetchData('teksTambahan');
+        const container = document.getElementById('currentTeksTambahan');
+        
+        if (data && data.length > 0) {
+          const teks = data[0]; // Ambil data pertama (satu-satunya)
+          container.innerHTML = `
+            <strong>${teks.Judul || '-'}</strong>
+            <p class="mb-0">${teks.Keterangan || '-'}</p>
+          `;
+          
+          // Isi form dengan data yang ada
+          document.getElementById('judulTeks').value = teks.Judul || '';
+          document.getElementById('keteranganTeks').value = teks.Keterangan || '';
+        } else {
+          container.innerHTML = '<p class="text-muted mb-0">Belum ada teks tambahan</p>';
+          // Kosongkan form
+          document.getElementById('judulTeks').value = '';
+          document.getElementById('keteranganTeks').value = '';
         }
+      } catch (error) {
+        console.error('Error loading teks tambahan:', error);
+      }
     }
 
     // Update event listener untuk modal teks tambahan
     document.getElementById('teksTambahanModal').addEventListener('show.bs.modal', function() {
-    loadTeksTambahan();
+      loadTeksTambahan();
     });
 
     // Fungsi untuk menghapus media
     async function deleteMedia(index) {
-        if (confirm('Apakah Anda yakin ingin menghapus gambar ini?')) {
-            try {
-            // Karena Apps Script kita belum support delete media, kita akan implementasi sederhana
-            // dengan mengirim request ke endpoint yang sama
-            await fetch(appsScriptUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify({ 
-                type: 'deleteMedia', 
-                index: index 
-                })
-            });
-            
-            showToast('Gambar berhasil dihapus');
-            loadSavedMedia(); // Refresh list
-            } catch (error) {
-            console.error('Error deleting media:', error);
-            showToast('Gagal menghapus gambar');
-            }
+      if (confirm('Apakah Anda yakin ingin menghapus gambar ini?')) {
+        try {
+          // Karena Apps Script kita belum support delete media, kita akan implementasi sederhana
+          // dengan mengirim request ke endpoint yang sama
+          await fetch(appsScriptUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({ 
+              type: 'deleteMedia', 
+              index: index 
+            })
+          });
+          
+          showToast('Gambar berhasil dihapus');
+          loadSavedMedia(); // Refresh list
+        } catch (error) {
+          console.error('Error deleting media:', error);
+          showToast('Gagal menghapus gambar');
         }
+      }
     }
 
     // Fungsi untuk mengedit item
@@ -1252,14 +1322,14 @@ async function submitForm(formData, type, closeModal = true) {
 
     // Event listener untuk form Teks Tambahan
     document.getElementById('teksTambahanForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-            const formData = {
-                Judul: document.getElementById('judulTeks').value,
-                Keterangan: document.getElementById('keteranganTeks').value
-            };
-        
-        // HAPUS ID KARENA SELALU UPDATE DATA YANG SAMA
-        submitForm(formData, 'tekstambahan');
+      e.preventDefault();
+      const formData = {
+        Judul: document.getElementById('judulTeks').value,
+        Keterangan: document.getElementById('keteranganTeks').value
+      };
+      
+      // HAPUS ID KARENA SELALU UPDATE DATA YANG SAMA
+      submitForm(formData, 'tekstambahan');
     });
 
     // Event listener untuk form Quran
@@ -1319,116 +1389,112 @@ async function submitForm(formData, type, closeModal = true) {
         loadTableData('teksTambahan', 'teksTambahanTable', ['Judul', 'Keterangan']);
       });
       
-    // Event listener untuk modal Quran - VERSI DETAIL
-    document.getElementById('quranModal').addEventListener('show.bs.modal', function() {
+      // Event listener untuk modal Quran - VERSI DETAIL
+      document.getElementById('quranModal').addEventListener('show.bs.modal', function() {
         loadQuranTable();
-    });
+      });
 
-    // Event listener untuk modal Hari Islam - VERSI DETAIL  
-    document.getElementById('hariIslamModal').addEventListener('show.bs.modal', function() {
+      // Event listener untuk modal Hari Islam - VERSI DETAIL  
+      document.getElementById('hariIslamModal').addEventListener('show.bs.modal', function() {
         loadHariIslamTable();
-    });
-
+      });
 
       // Event listener untuk modal data Media Modal
-    document.getElementById('dataMediaModal').addEventListener('show.bs.modal', function() {
+      document.getElementById('dataMediaModal').addEventListener('show.bs.modal', function() {
         loadSavedMedia();
-    });
+      });
     });
 
     // Fungsi khusus untuk tabel Quran/Hadits
-async function loadQuranTable() {
-  const data = await fetchData('ayatHadits');
-  const tableBody = document.getElementById('quranTable');
-  tableBody.innerHTML = '';
-  
-  data.forEach((item, index) => {
-    const row = document.createElement('tr');
-    
-    // Kolom Jenis
-    const jenisCell = document.createElement('td');
-    jenisCell.textContent = item.Jenis || '';
-    row.appendChild(jenisCell);
-    
-    // Kolom Tentang
-    const tentangCell = document.createElement('td');
-    tentangCell.textContent = item.Tentang || '';
-    row.appendChild(tentangCell);
-    
-    // Kolom Isi (dipendekkan)
-    const isiCell = document.createElement('td');
-    const isiText = item.Isi || '';
-    if (isiText.length > 40) {
-      isiCell.textContent = isiText.substring(0, 40) + '..............';
-      isiCell.title = isiText; // Tooltip teks lengkap
-      isiCell.style.cursor = 'help';
-    } else {
-      isiCell.textContent = isiText;
+    async function loadQuranTable() {
+      const data = await fetchData('ayatHadits');
+      const tableBody = document.getElementById('quranTable');
+      tableBody.innerHTML = '';
+      
+      data.forEach((item, index) => {
+        const row = document.createElement('tr');
+        
+        // Kolom Jenis
+        const jenisCell = document.createElement('td');
+        jenisCell.textContent = item.Jenis || '';
+        row.appendChild(jenisCell);
+        
+        // Kolom Tentang
+        const tentangCell = document.createElement('td');
+        tentangCell.textContent = item.Tentang || '';
+        row.appendChild(tentangCell);
+        
+        // Kolom Isi (dipendekkan)
+        const isiCell = document.createElement('td');
+        const isiText = item.Isi || '';
+        if (isiText.length > 40) {
+          isiCell.textContent = isiText.substring(0, 40) + '..............';
+          isiCell.title = isiText; // Tooltip teks lengkap
+          isiCell.style.cursor = 'help';
+        } else {
+          isiCell.textContent = isiText;
+        }
+        row.appendChild(isiCell);
+        
+        // Kolom Aksi
+        const actionCell = document.createElement('td');
+        actionCell.innerHTML = `
+          <button class="btn btn-sm btn-warning" onclick="editItem('ayatHadits', ${index})">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('ayatHadits', ${index})">Hapus</button>
+        `;
+        row.appendChild(actionCell);
+        
+        tableBody.appendChild(row);
+      });
     }
-    row.appendChild(isiCell);
-    
-    // Kolom Aksi
-    const actionCell = document.createElement('td');
-    actionCell.innerHTML = `
-      <button class="btn btn-sm btn-warning" onclick="editItem('ayatHadits', ${index})">Edit</button>
-      <button class="btn btn-sm btn-danger" onclick="deleteItem('ayatHadits', ${index})">Hapus</button>
-    `;
-    row.appendChild(actionCell);
-    
-    tableBody.appendChild(row);
-  });
-}
 
-// Fungsi khusus untuk tabel Hari Islam
-async function loadHariIslamTable() {
-  const data = await fetchData('hariIslam');
-  const tableBody = document.getElementById('hariIslamTable');
-  tableBody.innerHTML = '';
-  
-  data.forEach((item, index) => {
-    const row = document.createElement('tr');
-    
-    // Kolom Hari Islam
-    const hariCell = document.createElement('td');
-    hariCell.textContent = item['Hari Islam'] || '';
-    row.appendChild(hariCell);
-    
-    // Kolom Tanggal Hijriyah
-    const hijriyahCell = document.createElement('td');
-    hijriyahCell.textContent = item['Tanggal Hijriyah'] || '';
-    row.appendChild(hijriyahCell);
-    
-    // Kolom Pesan Teks (dipendekkan)
-    const pesanCell = document.createElement('td');
-    const pesanText = item['Pesan Teks'] || '';
-    if (pesanText.length > 30) {
-      pesanCell.textContent = pesanText.substring(0, 30) + '..............';
-      pesanCell.title = pesanText; // Tooltip teks lengkap
-      pesanCell.style.cursor = 'help';
-    } else {
-      pesanCell.textContent = pesanText;
+    // Fungsi khusus untuk tabel Hari Islam
+    async function loadHariIslamTable() {
+      const data = await fetchData('hariIslam');
+      const tableBody = document.getElementById('hariIslamTable');
+      tableBody.innerHTML = '';
+      
+      data.forEach((item, index) => {
+        const row = document.createElement('tr');
+        
+        // Kolom Hari Islam
+        const hariCell = document.createElement('td');
+        hariCell.textContent = item['Hari Islam'] || '';
+        row.appendChild(hariCell);
+        
+        // Kolom Tanggal Hijriyah
+        const hijriyahCell = document.createElement('td');
+        hijriyahCell.textContent = item['Tanggal Hijriyah'] || '';
+        row.appendChild(hijriyahCell);
+        
+        // Kolom Pesan Teks (dipendekkan)
+        const pesanCell = document.createElement('td');
+        const pesanText = item['Pesan Teks'] || '';
+        if (pesanText.length > 30) {
+          pesanCell.textContent = pesanText.substring(0, 30) + '..............';
+          pesanCell.title = pesanText; // Tooltip teks lengkap
+          pesanCell.style.cursor = 'help';
+        } else {
+          pesanCell.textContent = pesanText;
+        }
+        row.appendChild(pesanCell);
+        
+        // Kolom Tanggal Masehi
+        const masehiCell = document.createElement('td');
+        masehiCell.textContent = item['Tanggal Masehi'] || '';
+        row.appendChild(masehiCell);
+        
+        // Kolom Aksi
+        const actionCell = document.createElement('td');
+        actionCell.innerHTML = `
+          <button class="btn btn-sm btn-warning" onclick="editItem('hariIslam', ${index})">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('hariIslam', ${index})">Hapus</button>
+        `;
+        row.appendChild(actionCell);
+        
+        tableBody.appendChild(row);
+      });
     }
-    row.appendChild(pesanCell);
-    
-    // Kolom Tanggal Masehi
-    const masehiCell = document.createElement('td');
-    masehiCell.textContent = item['Tanggal Masehi'] || '';
-    row.appendChild(masehiCell);
-    
-    // Kolom Aksi
-    const actionCell = document.createElement('td');
-    actionCell.innerHTML = `
-      <button class="btn btn-sm btn-warning" onclick="editItem('hariIslam', ${index})">Edit</button>
-      <button class="btn btn-sm btn-danger" onclick="deleteItem('hariIslam', ${index})">Hapus</button>
-    `;
-    row.appendChild(actionCell);
-    
-    tableBody.appendChild(row);
-  });
-}
-
-
-
   </script>
 </body>
 </html>
