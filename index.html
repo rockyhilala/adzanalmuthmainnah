@@ -1,0 +1,2770 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aplikasi Adzan Al-Muthmainnah</title>
+  <link rel="icon" href="data:,">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!--CDN UNTUK LAYAR TETAP AKTIF-->
+  <script src="https://cdn.jsdelivr.net/npm/nosleep.js@0.12.0/dist/NoSleep.min.js"></script>
+  <!-- Sertakan prayTimes.js secara lokal. Pastikan file "prayTimes.js" ada di lokasi ini -->
+  <script src="prayTimes.js"></script>
+  <style>
+    /* Hilangkan scrollbar vertikal dan horizontal */
+    html, body {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+    }
+     /* Header */
+    .header {
+      background-color: #005a31;
+      color: #fff;
+      padding: 10px;
+    }
+    .header img {
+      max-height: 50px;
+    }
+
+    /* Optional: Hilangkan scrollbar pada elemen khusus */
+    .media-container {
+        overflow: hidden !important;
+    }
+    /* Carousel */
+    .carousel-item {
+      height: calc(100vh - 150px);
+      position: relative;
+      margin-top: -20px;
+      background-color: #ffffff;
+      color: #000000;
+      background-image: url('https://t4.ftcdn.net/jpg/06/13/24/35/360_F_613243588_B25G7ctvmeFsOmWVPYu4Yd19n6BQLoGp.jpg');
+    }
+    .carousel-item img, .carousel-item video {
+      object-fit: cover;
+      object-position: center; /* Memastikan gambar selalu terpusat */
+      margin-top: -50px;
+      height: 100%;
+      width: 100%;
+    }
+    .carousel-caption {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+    }
+    #carouselExampleIndicators {
+      margin-bottom: 70px;
+    }
+    /* Sembunyikan tombol prev/next pada carousel utama */
+    #carouselExampleIndicators .carousel-control-prev,
+    #carouselExampleIndicators .carousel-control-next {
+      display: none;
+    }
+
+    /* Sembunyikan tombol prev/next pada carousel keuangan */
+    #financeCarousel .carousel-control-prev,
+    #financeCarousel .carousel-control-next {
+      display: none;
+    }
+    /* Jadwal Adzan (tabel 100% lebar) - fixed di atas running text */
+    .adzan-table {
+      position: fixed;
+      bottom: 40px;
+      left: 0;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      z-index: 9999;
+      background-color: #ffffff;
+    }
+    /* Running text */
+    .marquee {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #005a31;
+      color: #ffffff;
+      font-weight: bold;
+      padding: 5px;
+      z-index: 10000;
+      margin: 0;
+      font-size: 20px;
+    }
+    /* Black overlay untuk iqamah selesai */
+    #blackOverlay {
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100%; 
+      height: 100%;
+      background: black;
+      display: none;
+      z-index: 9999;
+    }
+    #blackClock {
+      position: absolute;
+      top: 10px; 
+      right: 10px;
+      color: white;
+      font-size: 40px;
+    }
+    /* Popup untuk adzan */
+    #popupAdzan {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 2px solid #000;
+      padding: 20px;
+      display: none;
+      z-index: 10000;
+    }
+    /* Countdown iqamah */
+    #iqamahCountdown {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 2px solid #000;
+      padding: 20px;
+      display: none;
+      z-index: 10000;
+    }
+    .custom-card {
+      width: 100%;
+      min-height: 200px;
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+    /* Loading Screen */
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 20000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Update overlay: tampil spinner tanpa background putih (transparent) */
+    #updateOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      opacity: 0;
+      z-index: 20000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 576px) {
+      .header h4, .header p {
+        font-size: 14px;
+      }
+      #clock {
+        font-size: 18px;
+      }
+      .carousel-caption h5 {
+        font-size: 16px;
+      }
+      .carousel-caption p {
+        font-size: 12px;
+      }
+    }
+    /* Offcanvas (untuk tombol burger) */
+    .offcanvas {
+      z-index: 99999 !important;
+    }
+
+    .popup-style {
+      width: 350px;          /* Sesuaikan ukuran lebar yang diinginkan */
+      max-width: 100%;        /* Maksimum lebar responsif */
+      padding: 2rem;         /* Padding yang sama (setara dengan p-5) */
+    }
+
+    #iqamahOverlay {
+      opacity: 0.8;
+    }
+
+    #popupOverlay{
+      opacity: 0.8;
+    }
+
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 99999;
+        min-width: 250px;
+        }
+
+        /* Tombol Close Overlay Hitam */
+        #closeBlackOverlay {
+        opacity: 0.8;
+        transition: all 0.3s ease;
+        background-size: 2.5rem;
+        background-position: center;
+        }
+
+        #closeBlackOverlay:hover {
+        opacity: 1;
+        transform: scale(1.2) rotate(90deg);  /* Tambah efek putar saat hover */
+        filter: brightness(1.5);
+        cursor: pointer;
+
+        }
+
+/* CSS untuk carousel vertikal */
+    #financeCarousel .carousel-inner {
+    overflow: hidden; /* Sembunyikan overflow */
+    }
+
+    #financeCarousel .carousel-item {
+    transition: transform 2.5s ease-in-out; /* Animasi transisi */
+    }
+
+    #financeCarousel .carousel-item-next,
+    #financeCarousel .carousel-item-prev,
+    #financeCarousel .carousel-item.active {
+    display: block; /* Pastikan slide ditampilkan */
+    }
+
+    #financeCarousel .carousel-item-next.carousel-item-start,
+    #financeCarousel .carousel-item-prev.carousel-item-end {
+    transform: translateY(0); /* Posisi awal */
+    }
+
+    #financeCarousel .carousel-item-next,
+    #financeCarousel .active.carousel-item-end {
+    transform: translateY(100%); /* Geser ke bawah */
+    }
+
+    #financeCarousel .carousel-item-prev,
+    #financeCarousel .active.carousel-item-start {
+    transform: translateY(-100%); /* Geser ke atas */
+    }
+
+    .finance-center-wrapper {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;   /* tengah vertikal */
+        justify-content: center; /* tengah horizontal */
+        padding: 20px;
+    }
+
+
+    /* Video Overlay */
+#videoOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 99999;
+    display: none;
+}
+
+#videoContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
+#videoFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+#closeVideo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100000;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* CSS untuk ikon play/pause */
+.btn i {
+    margin-right: 8px; /* Jarak antara ikon dan teks */
+}
+
+/* Di bagian style */
+#jadwalTimes td {
+  background-color: #ffffff; /* Warna latar default */
+  color: #000000; /* Warna teks default */
+  transition: all 0.3s ease; /* Animasi halus saat perubahan */
+}
+
+
+  </style>
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00816d;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  ">
+    <div style="
+      background-image: url(icon.png);
+      width: 180px; /* Sesuaikan dengan ukuran logo */
+      height: 180px; /* Sesuaikan dengan ukuran logo */
+      background-size: contain; /* Atau gunakan background-size: cover, tergantung kebutuhan */
+      background-repeat: no-repeat;
+      background-position: center;
+    "></div>
+  </div>
+  
+  
+  <!-- Black overlay -->
+  <div id="blackOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; display: none; z-index: 9999;">
+    <button type="button" 
+            class="btn-close btn-close-white" 
+            id="closeBlackOverlay" 
+            aria-label="Close"
+            style="position: absolute; 
+                   top: 20px; 
+                   left: 20px; 
+                   padding: 1.5rem;
+                   font-size: 2rem;
+                   z-index: 10000;">
+    </button>
+  </div>
+
+  <!-- Header -->
+  <div class="container-fluid header p-2">
+    <div class="row align-items-center">
+      <!-- Kiri: Tanggal dan Kalender Hijriyah -->
+      <div class="col-12 col-md-4 text-start mb-2 mb-md-0">
+        <div id="currentDate" style="font-size: 24px;"></div>
+        <div id="hijriDate" style="font-size: 20px;"></div>
+      </div>
+      <!-- Tengah: Logo & Nama Masjid serta Alamat -->
+      <div class="col-12 col-md-4 d-flex align-items-center justify-content-center mb-2 mb-md-0">
+        <img id="masjidLogo" src="logo.png" alt="Logo Masjid" class="img-fluid me-2">
+        <div>
+          <h2 id="masjidName" class="mb-0" style="font-weight: bold;">Nama Masjid</h2>
+          <p id="masjidAddress" class="mb-0" style="font-size: 16px;">Alamat Masjid</p>
+        </div>
+      </div>
+      <!-- Kanan: Jam dan Tombol Burger -->
+      <div class="col-12 col-md-4 d-flex justify-content-end align-items-center" style="z-index: 10001; display: none;">
+        <div id="clock" class="me-2" style="font-size: 40px;"></div>
+        <!-- Tombol Refresh (Default: Tersembunyi) -->
+        <button id="refreshButton" class="btn btn-outline-light me-2">
+          ↻
+        </button>
+        <button id="hamburgerMenu" class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvasMenu">
+          ☰
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Carousel -->
+  <div class="media-container" style="display: flex;">
+    <!-- Frame Kiri: untuk tabel keuangan -->
+    <div class="media-left" style="width: 30%; background-color: white;">
+        <!-- Carousel Keuangan -->
+        <div id="financeCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="15000">
+            <div class="carousel-inner" id="financeCarouselInner">
+            <!-- Slide 1 -->
+            
+            </div>
+        </div>
+    </div>
+
+    <!-- Frame Kanan: untuk media lainnya -->
+    <div class="media-right" style="width: 70%;">
+      <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" data-bs-interval="10000">
+        <div class="carousel-indicators" id="carouselIndicators">
+          <!-- Indikator media (kecuali tabel keuangan) -->
+        </div>
+        <div class="carousel-inner" id="carouselInner" style="font-size: 20px;">
+          <!-- Media lain akan disisipkan di sini -->
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+           <span class="visually-hidden">Sebelumnya</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+           <span class="carousel-control-next-icon" aria-hidden="true"></span>
+           <span class="visually-hidden">Berikutnya</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+  
+
+
+  <!-- Jadwal Adzan -->
+  <div class="container-fluid p-0 adzan-table">
+    <div class="table-responsive">
+      <table class="table table-bordered text-center m-0">
+        <thead class="table-dark">
+          <tr id="jadwalHeader" style="font-size: 20px;">
+            <th>Imsak</th>
+            <th>Shubuh</th>
+            <th id="thSyuruq">Syuruq</th>
+            <th id="thDzuhur">Dzuhur</th>
+            <th>Ashar</th>
+            <th>Maghrib</th>
+            <th>Isya</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="jadwalTimes" style="font-size: 30px;">
+            <td id="timeImsak">--:--</td>
+            <td id="timeShubuh">--:--</td>
+            <td id="timeSyuruq">--:--</td>
+            <td id="timeDzuhur">--:--</td>
+            <td id="timeAshar">--:--</td>
+            <td id="timeMaghrib">--:--</td>
+            <td id="timeIsya">--:--</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<!-- Popup Adzan -->
+<div id="popupAdzan" class="position-fixed top-50 start-50 translate-middle text-white popup-style shadow-lg" style="background-color: rgba(0, 0, 0, 0.5); z-index: 10000; display: none;">
+    <h3 id="popupAdzanText" class="mb-2 text-center"></h3>
+    <div id="popupCountdown" class="display-2 text-center"></div>
+  </div>
+  
+  <!-- Overlay untuk menggelapkan fitur lain -->
+  <div id="popupOverlay" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="z-index: 9999; display: none;"></div>
+  
+<!-- Popup Countdown Iqamah -->
+<div id="iqamahCountdown" class="position-fixed top-50 start-50 translate-middle text-white popup-style shadow-lg" style="background-color: rgba(0, 0, 0, 0.5); z-index: 5000; display: none;">
+  <h3 id="iqamahText" class="mb-2 text-center"></h3>
+  <div id="iqamahTimer" class="display-2 text-center"></div>
+</div>
+
+<!-- Overlay untuk menggelapkan fitur lain -->
+<div id="iqamahOverlay" class="position-fixed top-0 start-0 w-100 h-100 bg-dark" style="z-index: 4999; display: none;"></div>
+
+<!-- MENU UNTUK SETTING -->
+<!-- Main Offcanvas Menu -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="mainOffcanvasMenu" aria-labelledby="mainOffcanvasMenuLabel">
+  <div class="offcanvas-header">
+    <!-- Tombol Back di sini (jika diinginkan, misalnya untuk menutup offcanvas utama) -->
+    <h5 id="mainOffcanvasMenuLabel" class="ms-auto">Pengaturan</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <div class="d-grid gap-2">
+      <button class="btn btn-success" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAdzan">Waktu Adzan Manual</button>
+      <button class="btn btn-success" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRunningText">Running Text</button>
+      <button class="btn btn-success" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCountdownAdzan">Durasi Tunggu Adzan</button>
+      <button class="btn btn-success" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCountdownIqamah">Durasi Tunggu Iqamah</button>
+      <button class="btn btn-success" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBlackOverlay">Durasi Latar Hitam</button>
+      <hr>
+      <button class="btn btn-danger" id="playEmergencyVideo">Live Makkah</button>
+      <button class="btn btn-danger" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRadio">Putar Radio</button>
+      <button class="btn btn-success invisible" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDataMasjid">Data Masjid</button>  
+    </div>
+  </div>
+
+  <!-- Di main offcanvas menu -->
+  <button class="btn btn-info" id="toggleModeBtn">Set Ulang Waktu Adzan</button>
+
+</div>
+
+<!-- Offcanvas Setting Data Masjid -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasDataMasjid" aria-labelledby="offcanvasDataMasjidLabel">
+    <div class="offcanvas-header">
+      <button type="button" class="btn btn-link" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvasMenu" aria-label="Back">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <h5 id="offcanvasDataMasjidLabel" class="ms-auto">Setting Data Masjid</h5>
+    </div>
+    <div class="offcanvas-body">
+      <form id="masjidDataForm">
+        <!-- Input Logo -->
+        <div class="mb-3">
+            <label for="logoInput" class="form-label">Logo Masjid</label>
+            <input type="file" class="form-control" id="logoInput" accept="image/*">
+            <small class="text-muted">Upload logo dalam format PNG/JPG maks 500KB</small>
+            <div id="logoPreview" class="mt-2">
+              <!-- Preview akan muncul di sini -->
+            </div>
+        </div>
+        
+        <!-- Input Nama Masjid -->
+        <div class="mb-3">
+          <label for="namaMasjidInput" class="form-label">Nama Masjid</label>
+          <input type="text" class="form-control" id="namaMasjidInput" required>
+        </div>
+        
+        <!-- Input Alamat Masjid -->
+        <div class="mb-3">
+          <label for="alamatMasjidInput" class="form-label">Alamat Masjid</label>
+          <textarea class="form-control" id="alamatMasjidInput" rows="3" required></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </form>
+    </div>
+    <!-- Di dalam offcanvas-body form Data Masjid -->
+        <button type="button" class="btn btn-danger mt-3" id="resetMasjidData">
+            Reset
+        </button>
+</div>
+
+<!-- Offcanvas Setting Waktu Adzan Manual -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAdzan" aria-labelledby="offcanvasAdzanLabel">
+  <div class="offcanvas-header">
+    <button type="button" class="btn btn-link" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvasMenu" aria-label="Back">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+    <h5 id="offcanvasAdzanLabel" class="ms-auto">Setting Waktu Adzan Manual</h5>
+  </div>
+  <div class="offcanvas-body" tabindex="-1">
+    <form id="manualPrayerForm" >
+      <!-- Form Input untuk waktu adzan -->
+      <div class="mb-3">
+        <label for="imsakInput" class="form-label">Imsak</label>
+        <input type="time" class="form-control" id="imsakInput" required>
+      </div>
+      <div class="mb-3">
+        <label for="shubuhInput" class="form-label">Shubuh</label>
+        <input type="time" class="form-control" id="shubuhInput" required>
+      </div>
+      <div class="mb-3">
+        <label for="syuruqInput" class="form-label">Syuruq</label>
+        <input type="time" class="form-control" id="syuruqInput" required>
+      </div>
+      <div class="mb-3">
+        <label for="dzuhurInput" class="form-label">Dzuhur</label>
+        <input type="time" class="form-control" id="dzuhurInput" required>
+      </div>
+      <div class="mb-3">
+        <label for="asharInput" class="form-label">Ashar</label>
+        <input type="time" class="form-control" id="asharInput" required>
+      </div>
+      <div class="mb-3">
+        <label for="maghribInput" class="form-label">Maghrib</label>
+        <input type="time" class="form-control" id="maghribInput" required>
+      </div>
+      <div class="mb-3">
+        <label for="isyaInput" class="form-label">Isya</label>
+        <input type="time" class="form-control" id="isyaInput" required>
+      </div>
+      <button type="submit" class="btn btn-primary" tabindex="0">Update</button>
+    </form>
+  </div>
+      <!-- Di dalam offcanvasAdzan -->
+      <button type="button" class="btn btn-danger mt-3" onclick="resetToAuto()">
+        Reset ke Otomatis
+      </button>
+</div>
+
+<!-- Offcanvas Setting Running Text -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRunningText" aria-labelledby="offcanvasRunningTextLabel">
+  <div class="offcanvas-header">
+    <button type="button" class="btn btn-link" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvasMenu" aria-label="Back">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+    <h5 id="offcanvasRunningTextLabel" class="ms-auto">Setting Running Text</h5>
+  </div>
+  <div class="offcanvas-body" tabindex="-1" >
+    <form id="runningTextForm">
+      <div id="runningTextInputs">
+        <!-- Grup input untuk New Text 1 (selalu ada) -->
+        <div class="mb-3 running-text-group" id="newText1Group">
+          <label for="newText1" class="form-label">New Text 1</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="newText1" placeholder="Masukkan teks 1" tabindex="0" required>
+          </div>
+        </div>
+      </div>
+      <!-- Tombol untuk menambahkan input (maksimal 3) -->
+      <button type="button" class="btn btn-info mb-3" id="addNewTextBtn" tabindex="0" >Tambah New Text</button>
+      <button type="submit" class="btn btn-secondary" tabindex="0">Update Running Text</button>
+    </form>
+  </div>
+</div>
+
+<!-- Offcanvas Setting Countdown -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCountdownAdzan" aria-labelledby="offcanvasCountdownAdzanLabel">
+    <div class="offcanvas-header">
+      <button type="button" class="btn btn-link" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvasMenu" aria-label="Back">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <h5 id="offcanvasCountdownAdzanLabel" class="ms-auto">Setting Countdown</h5>
+    </div>
+    <div class="offcanvas-body" tabindex="-1">
+      <form id="AdzanCountdownForm">
+        <!-- Form Input untuk waktu countdown Adzan -->
+        <div class="mb-3">
+          <label for="isyaAdzanCountdown" class="form-label">Isya</label>
+          <input type="number" class="form-control" id="isyaAdzanCountdown" >
+        </div>
+        <div class="mb-3">
+          <label for="shubuhAdzanCountdown" class="form-label">Shubuh</label>
+          <input type="number" class="form-control" id="shubuhAdzanCountdown" >
+        </div>
+        <div class="mb-3">
+          <label for="dzuhurAdzanCountdown" class="form-label">Dzuhur</label>
+          <input type="number" class="form-control" id="dzuhurAdzanCountdown" >
+        </div>
+        <div class="mb-3">
+          <label for="asharAdzanCountdown" class="form-label">Ashar</label>
+          <input type="number" class="form-control" id="asharAdzanCountdown" >
+        </div>
+        <div class="mb-3">
+          <label for="maghribAdzanCountdown" class="form-label">Maghrib</label>
+          <input type="number" class="form-control" id="maghribAdzanCountdown" >
+        </div>
+        <div class="mb-3">
+          <label for="jumatAdzanCountdown" class="form-label">Jumat</label>
+          <input type="number" class="form-control" id="jumatAdzanCountdown" >
+        </div>
+        <button type="submit" class="btn btn-primary" tabindex="0">Update</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Offcanvas Setting Countdown Iqamah -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCountdownIqamah" aria-labelledby="offcanvasCountdownIqamahLabel">
+    <div class="offcanvas-header">
+      <button type="button" class="btn btn-link" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvasMenu" aria-label="Back">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <h5 id="offcanvasCountdownIqamahLabel" class="ms-auto">Setting Countdown Iqamah</h5>
+    </div>
+    <div class="offcanvas-body" tabindex="-1">
+      <form id="iqamahCountdownForm">
+        <!-- Form Input untuk waktu countdown Iqamah -->
+        <div class="mb-3">
+          <label for="isyaIqamahCountdown" class="form-label">Isya</label>
+          <input type="number" class="form-control" id="isyaIqamahCountdown">
+        </div>
+        <div class="mb-3">
+          <label for="shubuhIqamahCountdown" class="form-label">Shubuh</label>
+          <input type="number" class="form-control" id="shubuhIqamahCountdown">
+        </div>
+        <div class="mb-3">
+          <label for="dzuhurIqamahCountdown" class="form-label">Dzuhur</label>
+          <input type="number" class="form-control" id="dzuhurIqamahCountdown">
+        </div>
+        <div class="mb-3">
+          <label for="asharIqamahCountdown" class="form-label">Ashar</label>
+          <input type="number" class="form-control" id="asharIqamahCountdown">
+        </div>
+        <div class="mb-3">
+          <label for="maghribIqamahCountdown" class="form-label">Maghrib</label>
+          <input type="number" class="form-control" id="maghribIqamahCountdown">
+        </div>
+        <button type="submit" class="btn btn-primary" tabindex="0">Update</button>
+      </form>
+    </div>
+  </div>
+
+
+
+<!-- Offcanvas Setting Durasi Overlay Black -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasBlackOverlay" aria-labelledby="offcanvasBlackOverlayLabel">
+    <div class="offcanvas-header">
+      <button type="button" class="btn btn-link" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvasMenu" aria-label="Back">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <h5 id="offcanvasBlackOverlayLabel" class="ms-auto">Setting Durasi Overlay Black</h5>
+    </div>
+    <div class="offcanvas-body" tabindex="-1">
+      <form id="blackOverlayForm">
+        <!-- Field input -->
+        <div class="mb-3">
+          <label for="isyaOverlay" class="form-label">Isya (menit)</label>
+          <input type="number" class="form-control" id="isyaOverlay">
+        </div>
+        <div class="mb-3">
+          <label for="shubuhOverlay" class="form-label">Shubuh (menit)</label>
+          <input type="number" class="form-control" id="shubuhOverlay">
+        </div>
+        <div class="mb-3">
+          <label for="dzuhurOverlay" class="form-label">Dzuhur (menit)</label>
+          <input type="number" class="form-control" id="dzuhurOverlay">
+        </div>
+        <div class="mb-3">
+          <label for="asharOverlay" class="form-label">Ashar (menit)</label>
+          <input type="number" class="form-control" id="asharOverlay">
+        </div>
+        <div class="mb-3">
+          <label for="maghribOverlay" class="form-label">Maghrib (menit)</label>
+          <input type="number" class="form-control" id="maghribOverlay">
+        </div>
+        <div class="mb-3">
+          <label for="jumatOverlay" class="form-label">Jumat (menit)</label>
+          <input type="number" class="form-control" id="jumatOverlay">
+        </div>
+        <button type="submit" class="btn btn-primary" tabindex="0">Update</button>
+      </form>
+    </div>
+</div>
+
+<!-- Offcanvas Setting Radio -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRadio" aria-labelledby="offcanvasRadioLabel">
+  <div class="offcanvas-header">
+      <button type="button" class="btn btn-link" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvasMenu" aria-label="Back">
+          <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <h5 id="offcanvasRadioLabel" class="ms-auto">Putar Radio</h5>
+  </div>
+  <div class="offcanvas-body" tabindex="-1">
+      <div class="d-grid gap-2">
+          <!-- Tombol RRI Pro 1 Gorontalo -->
+          <button class="btn btn-secondary" id="rriPro1Btn" data-radio="https://stream-node1.rri.co.id/streaming/15/9115/rrigorontalopro1.mp3">
+              <i class="bi bi-play-fill"></i> RRI Pro 1 Gorontalo
+          </button>
+          <!-- Tombol RRI Pro 2 Gorontalo -->
+          <button class="btn btn-secondary" id="rriPro2Btn" data-radio="https://stream-node1.rri.co.id/streaming/15/9115/rrigorontalopro2.mp3">
+              <i class="bi bi-play-fill"></i> RRI Pro 2 Gorontalo
+          </button>
+          <!-- Tombol RRI Pro 4 Gorontalo -->
+          <button class="btn btn-secondary" id="rriPro4Btn" data-radio="https://stream-node1.rri.co.id/streaming/15/9115/rrigorontalopro4.mp3">
+              <i class="bi bi-play-fill"></i> RRI Pro 4 Gorontalo
+          </button>
+      </div>
+  </div>
+</div>
+
+
+<!-- Contoh marquee running text -->
+<div class="marquee">
+  <marquee behavior="scroll" direction="left" id="runningTextDisplay">
+    Mohon untuk Menonaktifkan atau Mode Silent HP Anda jika Iqamah Telah Tiba, Agar tidak mengganggu kekhusyukan Shalat || Allah Subhanahu Wa Ta'ala berfirman : “Sesungguhnya shalat itu mencegah dari (perbuatan) keji dan mungkar” (Q.S. Al-Ankabut:45). 
+  </marquee>
+</div>
+
+  <!-- TOMBOL FRAME VIDEO LIVE MEKKAH -->
+  <div id="videoOverlay">
+    <div id="videoContainer">
+        <button id="closeVideo">&times;</button>
+        <iframe id="videoFrame" src="" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Popup Notifikasi -->
+  <div id="successPopup" class="position-fixed top-50 start-50 translate-middle bg-success text-white p-3 rounded shadow-lg"
+  style="display: none; z-index: 99999; font-size: 18px;">
+      Data berhasil disimpan!
+  </div>
+
+  <!-- Audio -->
+  <audio id="audioShalawat" src="shalawat.m4a" loop></audio>
+  <audio id="audioAdzan" src="adzan.mp3"></audio>
+  <audio id="audioBeep" src="beep.mp3"></audio>
+  <audio id="audioRooster" src="rooster.mp3"></audio>
+  <!-- Audio untuk Radio -->
+  <audio id="audioRadio" src="https://stream-node1.rri.co.id/streaming/15/9115/rrigorontalopro1.mp3"></audio>
+  <!-- Audio untuk Radio -->
+<audio id="audioRadio2"></audio>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Script JavaScript -->
+  <script>
+
+///////////////////FUNGSI UNTUK REFRESH MANUAL////////////
+// Pastikan tombol tersedia sebelum menambahkan event listener
+document.addEventListener("DOMContentLoaded", function() {
+    const refreshButton = document.getElementById("refreshButton");
+
+    if (refreshButton) {
+        refreshButton.addEventListener("click", function() {
+            console.log("Tombol refresh diklik! Halaman akan di-refresh...");
+            location.reload(); // Perintah untuk merefresh halaman
+        });
+    } else {
+        console.error("Tombol refresh tidak ditemukan di DOM!");
+    }
+});
+///////////////////FUNGSI UNTUK REFRESH MANUAL////////////
+
+//////////AWAL FUNGSI UNTUK RADIO////////////
+// Variabel untuk melacak radio yang sedang diputar
+let currentPlayingRadio = null;
+
+// Fungsi untuk memutar atau menghentikan radio
+function toggleRadio(radioUrl, button) {
+    const audioRadio2 = document.getElementById('audioRadio2');
+    const icon = button.querySelector('i');
+
+    // Jika radio yang sama diklik lagi, hentikan
+    if (currentPlayingRadio === radioUrl) {
+        stopRadio(button);
+    } else {
+        // Jika radio yang berbeda dipilih, hentikan yang lama dan putar yang baru
+        if (currentPlayingRadio) {
+            const previousButton = document.querySelector(`button[data-radio="${currentPlayingRadio}"]`);
+            if (previousButton) {
+                stopRadio(previousButton);
+            }
+        }
+        audioRadio2.src = radioUrl;
+        audioRadio2.play();
+        icon.classList.remove('bi-play-fill');
+        icon.classList.add('bi-stop-fill'); // Ubah ikon menjadi stop
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-success'); // Ubah warna tombol menjadi hijau
+        currentPlayingRadio = radioUrl;
+    }
+}
+
+// Fungsi untuk menghentikan radio
+function stopRadio(button) {
+    const audioRadio2 = document.getElementById('audioRadio2');
+    audioRadio2.pause();
+    audioRadio2.currentTime = 0;
+    const icon = button.querySelector('i');
+    icon.classList.remove('bi-stop-fill');
+    icon.classList.add('bi-play-fill'); // Kembalikan ikon ke play
+    button.classList.remove('btn-success');
+    button.classList.add('btn-secondary'); // Kembalikan warna tombol ke default
+    currentPlayingRadio = null;
+}
+
+// Event listener untuk tombol RRI Pro 1
+document.getElementById('rriPro1Btn').addEventListener('click', function() {
+    toggleRadio(this.getAttribute('data-radio'), this);
+});
+
+// Event listener untuk tombol RRI Pro 2
+document.getElementById('rriPro2Btn').addEventListener('click', function() {
+    toggleRadio(this.getAttribute('data-radio'), this);
+});
+
+// Event listener untuk tombol RRI Pro 4
+document.getElementById('rriPro4Btn').addEventListener('click', function() {
+    toggleRadio(this.getAttribute('data-radio'), this);
+});
+//////////AKHIR FUNGSI UNTUK RADIO////////////
+
+
+
+
+
+
+//////////AWAL FRAME UNTUK VIDEO LIVE MEKKAH////////////
+document.getElementById('playEmergencyVideo').addEventListener('click', function() {
+    // Tutup semua menu offcanvas
+    const offcanvasInstances = document.querySelectorAll('.offcanvas');
+    offcanvasInstances.forEach(offcanvas => {
+        bootstrap.Offcanvas.getInstance(offcanvas)?.hide();
+    });
+    
+    // Matikan carousel dan tabel
+    document.querySelector('.media-container').style.display = 'none';
+    document.querySelector('.adzan-table').style.display = 'none';
+    
+    // Tampilkan video overlay
+    const videoOverlay = document.getElementById('videoOverlay');
+    const videoFrame = document.getElementById('videoFrame');
+    videoOverlay.style.display = 'block';
+    
+    // Set video ID (ganti dengan ID yang diinginkan)
+    const videoId = 'tko4c06NJeA';
+    videoFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=1&rel=0`;
+});
+
+document.getElementById('closeVideo').addEventListener('click', function() {
+    // Sembunyikan video overlay
+    document.getElementById('videoOverlay').style.display = 'none';
+    
+    // Tampilkan kembali carousel dan tabel
+    document.querySelector('.media-container').style.display = 'flex';
+    document.querySelector('.adzan-table').style.display = 'block';
+    
+    // Hentikan video
+    const videoFrame = document.getElementById('videoFrame');
+    videoFrame.src = '';
+});
+
+// Blokir semua interaksi kecuali tombol close
+document.getElementById('videoOverlay').addEventListener('click', function(e) {
+    if(e.target === this) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+});
+
+//////////AKHIR FRAME UNTUK VIDEO LIVE MEKKAH////////////
+
+
+    // Inisialisasi jadwal sebagai objek kosong; nanti akan di-update otomatis
+    let adzanSchedule = {};
+    let adzanCountdownDurations = {};
+    let iqamahCountdownDurations = {};
+    let overlayBlackDurations = {};
+
+////////////////AWAL FUNGSI DATA MASJID SPREADSHEET/////////////////////////////////////////
+// Fungsi untuk mengambil Data Masjid dari Google Spreadsheet
+// Fungsi untuk mengambil data Masjid dari spreadsheet, namun untuk logo, cek terlebih dahulu localStorage.
+function fetchMasjidData() {
+    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec?type=datamasjid";
+
+    fetch(appsScriptUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (!data || Object.keys(data).length === 0) {
+                console.error("Error: Data Masjid dari Spreadsheet kosong atau tidak terbaca.");
+                return;
+            }
+
+            console.log("Data Masjid berhasil diperbarui:", data);
+
+            // Update nama dan alamat
+            document.getElementById("masjidName").innerText = data.NamaMasjid || "Nama Masjid";
+            document.getElementById("masjidAddress").innerText = data.Alamat || "Alamat Masjid";
+
+            // Untuk logo: cek localStorage terlebih dahulu
+            let logoUrl = localStorage.getItem('masjidLogo');
+            if (!logoUrl) {
+                // Jika tidak ada, gunakan nilai dari spreadsheet atau default "logo.png"
+                logoUrl = data.Logo || "logo.png";
+            }
+            document.getElementById("masjidLogo").src = logoUrl;
+            if (document.getElementById("logoPreview")) {
+              document.getElementById("logoPreview").innerHTML = logoUrl ? 
+                `<img src="${logoUrl}" alt="Logo Preview" style="max-width: 100%; max-height: 150px;">` : 
+                '';
+            }
+            // Update form input (kecuali logo)
+            document.getElementById("namaMasjidInput").value = data.NamaMasjid || "";
+            document.getElementById("alamatMasjidInput").value = data.Alamat || "";
+        })
+        .catch(err => console.error("Error fetching Masjid data:", err));
+}
+
+// Fungsi untuk mengupdate data Masjid ke spreadsheet (termasuk field Logo, yang merupakan data URL)
+function updateMasjidData(data) {
+    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec";
+
+    fetch(appsScriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',  // Ini penting agar Apps Script tidak memblokir request
+                credentials: 'omit', // Mencegah pengiriman cookie/session
+        body: JSON.stringify({ ...data, type: "datamasjid" }),
+    })
+    .then(response => response.json())
+    .then(responseData => {
+        console.log("Respon dari server:", responseData);
+    })
+    .catch(err => console.error("Error saat mengupdate data:", err));
+
+}
+
+
+// Event Listener untuk Form Data Masjid
+document.getElementById('masjidDataForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+
+    const namaMasjid = document.getElementById('namaMasjidInput').value.trim();
+    const alamatMasjid = document.getElementById('alamatMasjidInput').value.trim();
+    const logoFile = document.getElementById('logoInput').files[0];
+    
+    if (logoFile) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const dataUrl = event.target.result; // Data URL lengkap
+            // Simpan ke localStorage
+            localStorage.setItem('masjidLogo', dataUrl);
+            // Siapkan data untuk di-update (logo berupa data URL)
+            const data = {
+                type: "datamasjid",
+                NamaMasjid: namaMasjid,
+                Alamat: alamatMasjid,
+                Logo: dataUrl
+            };
+            updateMasjidData(data);
+            // Tutup offcanvas (jika ada)
+            const offcanvasMasjidEl = document.getElementById('offcanvasDataMasjid');
+            const bsOffcanvasMasjid = bootstrap.Offcanvas.getInstance(offcanvasMasjidEl);
+            if (bsOffcanvasMasjid) { bsOffcanvasMasjid.hide(); }
+            bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('mainOffcanvasMenu')).show();
+        };
+        reader.readAsDataURL(logoFile);
+    } else {
+        // Jika tidak ada file baru, gunakan logo yang sudah tersimpan (atau default)
+        const currentLogo = localStorage.getItem('masjidLogo') || "logo.png";
+        const data = {
+            type: "datamasjid",
+            NamaMasjid: namaMasjid,
+            Alamat: alamatMasjid,
+            Logo: currentLogo
+        };
+        updateMasjidData(data);
+        const offcanvasMasjidEl = document.getElementById('offcanvasDataMasjid');
+        const bsOffcanvasMasjid = bootstrap.Offcanvas.getInstance(offcanvasMasjidEl);
+        if (bsOffcanvasMasjid) { bsOffcanvasMasjid.hide(); }
+        bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('mainOffcanvasMenu')).show();
+    }
+
+});
+
+
+// Preview logo ketika file di-upload dan simpan ke localStorage
+document.getElementById('logoInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const dataUrl = event.target.result;
+            localStorage.setItem('masjidLogo', dataUrl);
+            document.getElementById('logoPreview').innerHTML = `<img src="${dataUrl}" alt="Logo Preview" style="max-width: 100%; max-height: 150px;">`;
+            document.getElementById('masjidLogo').src = dataUrl;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Pada tombol reset, hapus logo dari localStorage dan kembalikan ke default
+document.getElementById('resetMasjidData').addEventListener('click', function() {
+    document.getElementById('namaMasjidInput').value = '';
+    document.getElementById('alamatMasjidInput').value = '';
+    localStorage.removeItem('masjidLogo');
+    document.getElementById('masjidLogo').src = 'logo.png';
+    document.getElementById('logoPreview').innerHTML = '';
+    fetchMasjidData();
+});
+
+// Pastikan untuk memanggil fetchMasjidData saat halaman dimuat
+document.addEventListener('DOMContentLoaded', fetchMasjidData);
+
+
+////////////////AKHIR FUNGSI DATA MASJID SPREADSHEET/////////////////////////////////////////
+
+
+
+////////////////AWAL FUNGSI IQAMAH SPREADSHEET/////////////////////////////////////////
+        // Fungsi untuk mengambil data dari Google Spreadsheet
+        function fetchIqamahCountdownData() {
+        const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec?type=iqamah";
+
+        fetch(appsScriptUrl)
+          .then(response => response.json())
+          .then(data => {
+              if (!data || Object.keys(data).length === 0) {
+                  console.error("Error: Data Iqamah dari Spreadsheet kosong atau tidak terbaca.");
+                  return;
+              }
+
+              // Pastikan bahwa data yang diterima sesuai dengan yang diharapkan
+             console.log("Durasi Iqamah berhasil diperbarui:", data);
+
+              // ✅ Perbarui nilai form agar sesuai dengan Spreadsheet
+              document.getElementById('isyaIqamahCountdown').value = data.Isya || 25;
+              document.getElementById('shubuhIqamahCountdown').value = data.Shubuh || 25;
+              document.getElementById('dzuhurIqamahCountdown').value = data.Dzuhur || 25;
+              document.getElementById('asharIqamahCountdown').value = data.Ashar || 25;
+              document.getElementById('maghribIqamahCountdown').value = data.Maghrib || 3;
+
+              // ✅ Simpan data ke variabel global untuk digunakan di countdown
+              iqamahCountdownDurations = {
+                  isya: parseInt(data.Isya) || 25,
+                  shubuh: parseInt(data.Shubuh) || 25,
+                  dzuhur: parseInt(data.Dzuhur) || 25,
+                  ashar: parseInt(data.Ashar) || 25,
+                  maghrib: parseInt(data.Maghrib) || 3
+              };
+              console.log("Data yang diterima untuk Countdown Iqamah:", iqamahCountdownDurations);
+          })
+          .catch(err => console.error("Error fetching Iqamah Countdown data:", err));
+        }
+
+        // Fungsi untuk mengupdate data ke Google Spreadsheet
+        function updateIqamahCountdownData(data) {
+            const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec";
+
+            fetch(appsScriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'no-cors',  // Ini penting agar Apps Script tidak memblokir request
+                credentials: 'omit', // Mencegah pengiriman cookie/session
+                body: JSON.stringify({...data, type: "iqamah"}),
+            })
+            .then(response => response.json())
+            .then(responseData => {
+                console.log("Countdown Iqamah telah diperbarui:", responseData);
+
+                // ✅ Perbarui variabel global agar popup countdown menggunakan nilai terbaru
+                iqamahCountdownDurations = { ...data };
+                console.log("Durasi Iqamah setelah update:", iqamahCountdownDurations);
+            })
+            .catch(err => console.error("Error updating Iqamah Countdown data:", err));
+        }
+
+
+        // Event Listener untuk Form Countdown Iqamah
+        document.getElementById('iqamahCountdownForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const isyaIqamahCountdown = parseInt(document.getElementById('isyaIqamahCountdown').value) || 25;
+        const shubuhIqamahCountdown = parseInt(document.getElementById('shubuhIqamahCountdown').value) || 25;
+        const dzuhurIqamahCountdown = parseInt(document.getElementById('dzuhurIqamahCountdown').value) || 25;
+        const asharIqamahCountdown = parseInt(document.getElementById('asharIqamahCountdown').value) || 25;
+        const maghribIqamahCountdown = parseInt(document.getElementById('maghribIqamahCountdown').value) || 3;
+        
+        const data = {
+          type: "iqamah",
+            Isya: isyaIqamahCountdown,
+            Shubuh: shubuhIqamahCountdown,
+            Dzuhur: dzuhurIqamahCountdown,
+            Ashar: asharIqamahCountdown,
+            Maghrib: maghribIqamahCountdown,
+        };
+
+        // Kirim data ke Google Spreadsheet
+        updateIqamahCountdownData(data);
+        fetchIqamahCountdownData(); // ✅ Ambil ulang data agar jika pengguna refresh, countdown tetap benar        
+        // Tutup offcanvas dan tampilkan menu utama
+        const offcanvasIqamahEl = document.getElementById('offcanvasCountdownIqamah');
+        const bsOffcanvasIqamah = bootstrap.Offcanvas.getInstance(offcanvasIqamahEl);
+        if (bsOffcanvasIqamah) {
+            bsOffcanvasIqamah.hide();
+        }
+        bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('mainOffcanvasMenu')).show();
+        });
+
+        // Ambil data saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', fetchIqamahCountdownData);
+////////////////AWAL FUNGSI IQAMAH SPREADSHEET/////////////////////////////////////////
+
+
+
+////////////////AWAL FUNGSI COUNTDOWN ADZAN SPREADSHEET/////////////////////////////////////////
+        // Fungsi untuk mengambil data dari Google Spreadsheet
+        function fetchAdzanCountdownData() {
+        const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec?type=adzan";
+
+        fetch(appsScriptUrl)
+            .then(response => response.json())
+            .then(data => {
+                      if (!data || Object.keys(data).length === 0) {
+                        console.error("Error: Data Adzan dari Spreadsheet kosong atau tidak terbaca.");
+                        return;
+                    }
+
+              // Pastikan bahwa data yang diterima sesuai dengan yang diharapkan
+             console.log("Data yang diterima untuk Countdown Adzan:", data);
+
+              // ✅ Perbarui nilai form agar sesuai dengan Spreadsheet
+              document.getElementById('isyaAdzanCountdown').value = data.Isya || 10;
+              document.getElementById('shubuhAdzanCountdown').value = data.Shubuh || 10;
+              document.getElementById('dzuhurAdzanCountdown').value = data.Dzuhur || 10;
+              document.getElementById('asharAdzanCountdown').value = data.Ashar || 10;
+              document.getElementById('maghribAdzanCountdown').value = data.Maghrib || 10;
+              document.getElementById('jumatAdzanCountdown').value = data.Jumat || 10;
+
+                    adzanCountdownDurations = {
+                        isya: parseInt(data.Isya) || 10,
+                        shubuh: parseInt(data.Shubuh) || 10,
+                        dzuhur: parseInt(data.Dzuhur) || 10,
+                        ashar: parseInt(data.Ashar) || 10,
+                        maghrib: parseInt(data.Maghrib) || 10,
+                        jumat: parseInt(data.Jumat) || 10
+                    };
+                    console.log("Durasi Adzan berhasil diambil:", adzanCountdownDurations);
+                })
+                .catch(err => console.error("Error fetching Adzan Countdown data:", err));
+        }
+
+        // Fungsi untuk mengupdate data ke Google Spreadsheet
+        function updateAdzanCountdownData(data) {
+            const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec?";
+
+            fetch(appsScriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'no-cors',  // Ini penting agar Apps Script tidak memblokir request
+                credentials: 'omit', // Mencegah pengiriman cookie/session
+                body: JSON.stringify({...data, type: "adzan"}),
+            })
+                .then(response => response.json())
+                .then(responseData => {
+                    console.log("Countdown Adzan telah diperbarui:", responseData);
+
+                    // ✅ Sinkronkan variabel lokal dengan form
+                    adzanCountdownDurations = { ...data };
+                    console.log("Durasi Adzan setelah update:", adzanCountdownDurations);
+                })
+                .catch(err => console.error("Error updating Adzan Countdown data:", err));
+            }
+
+
+        // Event Listener untuk Form Countdown Adzan
+        document.getElementById('AdzanCountdownForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const isyaAdzanCountdown = parseInt(document.getElementById('isyaAdzanCountdown').value) || 25;
+        const shubuhAdzanCountdown = parseInt(document.getElementById('shubuhAdzanCountdown').value) || 25;
+        const dzuhurAdzanCountdown = parseInt(document.getElementById('dzuhurAdzanCountdown').value) || 25;
+        const asharAdzanCountdown = parseInt(document.getElementById('asharAdzanCountdown').value) || 25;
+        const maghribAdzanCountdown = parseInt(document.getElementById('maghribAdzanCountdown').value) || 3;
+        const jumatAdzanCountdown = parseInt(document.getElementById('jumatAdzanCountdown').value) || 3;
+
+        
+        const data = {
+          type: "adzan",
+            Isya: isyaAdzanCountdown,
+            Shubuh: shubuhAdzanCountdown,
+            Dzuhur: dzuhurAdzanCountdown,
+            Ashar: asharAdzanCountdown,
+            Maghrib: maghribAdzanCountdown,
+            Jumat: jumatAdzanCountdown,
+        };
+
+        // Kirim data ke Google Spreadsheet
+        updateAdzanCountdownData(data);
+        fetchAdzanCountdownData(); // ✅ Ambil ulang data agar jika pengguna refresh, countdown tetap benar        
+
+        
+        // Tutup offcanvas dan tampilkan menu utama
+        const offcanvasCountdownAdzan  = document.getElementById('offcanvasCountdownAdzan');
+        const bsoffcanvasCountdownAdzan = bootstrap.Offcanvas.getInstance(offcanvasCountdownAdzan);
+        if (bsoffcanvasCountdownAdzan) {
+          bsoffcanvasCountdownAdzan.hide();
+        }
+        bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('mainOffcanvasMenu')).show();
+        });
+
+        
+// Ambil data saat halaman dimuat
+document.addEventListener('DOMContentLoaded', fetchAdzanCountdownData);
+
+////////////////AKHIR FUNGSI COUNTDOWN ADZAN SPREADSHEET/////////////////////////////////////////
+
+
+
+
+////////////////AWAL FUNGSI COUNTDOWN BLACK OVERLAY SPREADSHEET/////////////////////////////////////////
+// Fungsi untuk mengambil data dari Google Spreadsheet (untuk Countdown Black Overlay)
+function fetchBlackOverlayData() {
+  const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec?type=blackoverlay";
+
+  fetch(appsScriptUrl)
+    .then(response => response.json())
+    .then(data => {
+        if (!data || Object.keys(data).length === 0) {
+            console.error("Error: Data Black Overlay dari Spreadsheet kosong atau tidak terbaca.");
+            return;
+        }              
+        
+        // Pastikan bahwa data yang diterima sesuai dengan yang diharapkan
+        console.log("Data yang diterima untuk Durasi Overlay Black:", data);
+
+        // Perbarui nilai form agar sesuai dengan Spreadsheet
+        document.getElementById('isyaOverlay').value = data.Isya || 60;
+        document.getElementById('shubuhOverlay').value = data.Shubuh || 15;
+        document.getElementById('dzuhurOverlay').value = data.Dzuhur || 15;
+        document.getElementById('asharOverlay').value = data.Ashar || 15;
+        document.getElementById('maghribOverlay').value = data.Maghrib || 15;
+        document.getElementById('jumatOverlay').value = data.Jumat || 60;
+
+        // Simpan data ke variabel global untuk digunakan di countdown
+        overlayBlackDurations = {
+            isya: parseInt(data.Isya) || 60,
+            shubuh: parseInt(data.Shubuh) || 15,
+            dzuhur: parseInt(data.Dzuhur) || 15,
+            ashar: parseInt(data.Ashar) || 15,
+            maghrib: parseInt(data.Maghrib) || 15,
+            jumat: parseInt(data.Jumat) || 60
+        };
+
+        console.log("Durasi Black Overlay berhasil diperbarui:", overlayBlackDurations);
+    })
+    .catch(err => console.error("Error fetching Black Overlay data:", err));
+}
+
+// Fungsi untuk mengupdate data ke Google Spreadsheet
+function updateBlackOverlayData(data) {
+    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec";
+
+    fetch(appsScriptUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        mode: 'no-cors',  // Ini penting agar Apps Script tidak memblokir request
+        credentials: 'omit', // Mencegah pengiriman cookie/session
+        body: JSON.stringify({...data, type: "blackoverlay"}),
+    })
+    .then(response => response.json())
+    .then(responseData => {
+        console.log("Durasi Black Overlay telah diperbarui:", responseData);
+
+        // Perbarui variabel global agar popup countdown menggunakan nilai terbaru
+        overlayBlackDurations = { ...data };
+        console.log("Durasi Black Overlay setelah update:", overlayBlackDurations);
+    })
+    .catch(err => console.error("Error updating Black Overlay data:", err));
+}
+
+// Event Listener untuk Form Countdown Black Overlay
+document.getElementById('blackOverlayForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const isyaOverlay = parseInt(document.getElementById('isyaOverlay').value) || 60;
+    const shubuhOverlay = parseInt(document.getElementById('shubuhOverlay').value) || 15;
+    const dzuhurOverlay = parseInt(document.getElementById('dzuhurOverlay').value) || 15;
+    const asharOverlay = parseInt(document.getElementById('asharOverlay').value) || 15;
+    const maghribOverlay = parseInt(document.getElementById('maghribOverlay').value) || 15;
+    const jumatOverlay = parseInt(document.getElementById('jumatOverlay').value) || 60;
+    
+    const data = {
+        type: "blackoverlay",
+        Isya: isyaOverlay,
+        Shubuh: shubuhOverlay,
+        Dzuhur: dzuhurOverlay,
+        Ashar: asharOverlay,
+        Maghrib: maghribOverlay,
+        Jumat: jumatOverlay
+    };
+
+    // Kirim data ke Google Spreadsheet
+    updateBlackOverlayData(data);
+    fetchBlackOverlayData(); // Ambil ulang data agar jika pengguna refresh, countdown tetap benar
+    
+    // Tutup offcanvas dan tampilkan menu utama
+    const offcanvasBlackOverlayEl = document.getElementById('offcanvasBlackOverlay');
+    const bsOffcanvasBlackOverlay = bootstrap.Offcanvas.getInstance(offcanvasBlackOverlayEl);
+    if (bsOffcanvasBlackOverlay) {
+        bsOffcanvasBlackOverlay.hide();
+    }
+    bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('mainOffcanvasMenu')).show();
+});
+
+// Ambil data saat halaman dimuat
+document.addEventListener('DOMContentLoaded', fetchBlackOverlayData);
+
+////////////////AKHIR FUNGSI COUNTDOWN BLACK OVERLAY SPREADSHEET/////////////////////////////////////////
+
+
+//////////////AWAL FUNGSI TOMBOL KIRIM DATA////////////////////
+
+document.addEventListener("DOMContentLoaded", function() {
+    const forms = document.querySelectorAll("form");
+
+    forms.forEach(form => {
+        form.addEventListener("submit", function(event) {
+            event.preventDefault(); // Mencegah submit default
+
+            // Tampilkan popup notifikasi
+            const successPopup = document.getElementById("successPopup");
+            successPopup.style.display = "block";
+
+            // Sembunyikan popup setelah 2 detik dan reload halaman
+            setTimeout(() => {
+                successPopup.style.display = "none";
+                location.reload();
+            }, 2000); // Reload setelah 2 detik
+        });
+    });
+});
+
+//////////////AKHIR FUNGSI TOMBOL KIRIM DATA////////////////////
+
+
+    // Global flag untuk mencegah popup adzan dipicu berkali-kali
+    window.popupAdzanActive = false;
+    window.adzanCountdownInterval = null;
+    window.iqamahCountdownInterval = null;
+
+
+    // Cek jika hari Jumat (getDay(): 5 adalah Jumat)
+    document.addEventListener("DOMContentLoaded", function() {
+        const today = new Date();
+        
+        if (today.getDay() === 5) { // 5 adalah Jumat
+            const thDzuhur = document.getElementById("thDzuhur");
+            if (thDzuhur) {
+                thDzuhur.innerText = "Jumat";
+            }
+
+            // Pastikan iqamahDurations sudah dideklarasikan sebelumnya
+            if (typeof iqamahDurations === "undefined") {
+                iqamahDurations = {};
+            }
+
+            // Set durasi Iqamah khusus untuk Jumat (misalnya 40 menit)
+            iqamahDurations.dzuhur = 40;
+        }
+    });
+
+
+// Variabel flag agar popup hanya dipicu satu kali per waktu
+let imsakPopupTriggered = false;
+let syuruqPopupTriggered = false;
+let isPageReloaded = false; // Flag untuk memastikan reload hanya sekali
+
+// Pastikan refreshButton disembunyikan terlebih dahulu setelah halaman dimuat
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("refreshButton").style.display = "none";
+});
+
+// Fungsi untuk mengecek apakah saat ini waktunya imsak atau syuruq
+function checkPopup() {
+    const now = new Date();
+    const currentTime = now.toTimeString().slice(0, 5); // format HH:MM
+
+    const imsakTime = document.getElementById('timeImsak').innerText.trim();
+    const syuruqTime = document.getElementById('timeSyuruq').innerText.trim();
+
+    // Pastikan waktu sudah ter-update (tidak "--:--")
+    if (imsakTime !== "--:--" && !imsakPopupTriggered && currentTime === imsakTime) {
+        triggerPopup("Imsak");
+        imsakPopupTriggered = true;
+    }
+
+    if (syuruqTime !== "--:--" && !syuruqPopupTriggered && currentTime === syuruqTime) {
+        triggerPopup("Syuruq");
+        syuruqPopupTriggered = true;
+    }
+}
+
+// Fungsi untuk menampilkan popup dengan durasi 20 detik, memainkan audio sesuai dan menampilkan refreshButton setelahnya
+function triggerPopup(type) { 
+    const popup = document.getElementById("popupAdzan"); 
+    const popupText = document.getElementById("popupAdzanText"); 
+
+    // Tampilkan pesan dan mainkan audio sesuai tipe popup
+    if (type === "Imsak") { 
+        popupText.innerText = "Waktunya Imsak"; 
+        document.getElementById("audioRooster").play(); 
+    } else if (type === "Syuruq") { 
+        popupText.innerText = "Waktunya Syuruq"; 
+        document.getElementById("audioBeep").play(); 
+    } 
+
+    // Tampilkan popup
+    popup.style.display = "block"; 
+
+    // Setelah 60 detik, sembunyikan popup dan reload halaman jika belum di-reload
+    setTimeout(function() { 
+        popup.style.display = "none";
+
+        // Hanya reload jika halaman belum pernah di-reload
+        if (!isPageReloaded) {
+            isPageReloaded = true;
+            location.reload(); 
+        }
+    }, 60000); 
+}
+
+
+
+// Fungsi untuk memperbarui jam dan memeriksa apakah waktunya popup
+function updateClock() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+
+    // Update tampilan jam di elemen dengan id 'clock'
+    document.getElementById('clock').innerText = `${hours}:${minutes}:${seconds}`;
+
+    // Panggil fungsi cek popup setiap detik
+    checkPopup();
+}
+
+// Set interval untuk memperbarui jam dan memeriksa popup tiap detik
+setInterval(updateClock, 1000);
+
+// Panggil updateClock segera untuk menampilkan jam saat halaman pertama kali dimuat
+updateClock();
+
+
+    // Fungsi update tanggal dan kalender Hijriyah
+    function updateDate() {
+      const now = new Date();
+      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      document.getElementById('currentDate').innerText = now.toLocaleDateString('id-ID', options);
+    }
+    updateDate();
+
+    function updateHijriDate() {
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0'); // bulan dimulai dari 0
+      const yyyy = today.getFullYear();
+      const dateStr = dd + '-' + mm + '-' + yyyy;
+
+      // Memanggil API Aladhan untuk konversi tanggal
+      fetch(`https://api.aladhan.com/v1/gToH?date=${dateStr}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.data && data.data.hijri) {
+            const hijriData = data.data.hijri;
+            // Format tampilan: misalnya "05 Ramadan 1446"
+            document.getElementById('hijriDate').innerText = 
+              hijriData.day + ' ' + hijriData.month.en + ' ' + hijriData.year;
+          }
+        })
+        .catch(err => console.error("Error fetching Hijriyah date:", err));
+    }
+
+    updateHijriDate();
+    updatePrayerTimes();
+
+    // URL Apps Script (mengambil DataMasjid, DataMedia, DataTabel)
+    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec";
+
+    // Flag untuk pemanggilan pertama
+    let initialLoad = true;
+
+
+    // Fungsi untuk format rupiah
+    function formatRupiah(angka) {
+      return "Rp. " + Number(angka).toLocaleString('id-ID');
+    }
+
+
+    let cachedData = null; // Variabel untuk menyimpan data cache
+    // Fungsi fetchData dengan overlay update (untuk DataMasjid, DataMedia, DataTabel)
+    // =========================
+    //  FUNGSI FETCHDATA
+    // =========================
+
+    function fetchData(showLoading = true) {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        if (showLoading && initialLoad) {
+            loadingOverlay.style.display = 'flex';
+            initialLoad = false;
+        }
+
+        fetch(appsScriptUrl)
+            .then(response => response.json())
+            .then(data => {
+                cachedData = data;
+
+                if (data.DataMedia) {
+
+                    let indicatorsHtml = "";
+                    let innerHtml = "";
+
+                    data.DataMedia.forEach((item, index) => {
+
+                        indicatorsHtml += `<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${index}" ${index === 0 ? 'class="active" aria-current="true"' : ''} aria-label="Slide ${index + 1}"></button>`;
+
+                        innerHtml += `<div class="carousel-item ${index === 0 ? 'active' : ''}">`;
+
+                        if (item.Media.toLowerCase() === "gambar") {
+                            innerHtml += `<img src="${item["Url"]}" class="d-block w-100">`;
+
+                            if ((item.Judul && item.Judul.trim() !== "") || (item.Deskripsi && item.Deskripsi.trim() !== "")) {
+                                innerHtml += `<div class="carousel-caption d-none d-md-block">
+                                                <h5>${item.Judul}</h5>
+                                                <p>${item.Deskripsi}</p>
+                                            </div>`;
+                            }
+                        }
+
+                        else if (item.Media.toLowerCase() === "video") {
+                            innerHtml += `<video class="d-block w-100" autoplay muted loop>
+                                            <source src="${item["Url"]}" type="video/mp4">
+                                          </video>`;
+                        }
+
+                        innerHtml += `</div>`;
+                    });
+
+                    document.getElementById("carouselIndicators").innerHTML = indicatorsHtml;
+                    document.getElementById("carouselInner").innerHTML = innerHtml;
+                }
+
+            })
+            .catch(err => console.error("Error:", err))
+            .finally(() => loadingOverlay.style.display = 'none');
+    }
+
+    async function loadFinanceSlides() {
+
+      const urlBase = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec";
+      let now = new Date();
+
+      // ========================================================
+      // FETCH PARALEL (super cepat)
+      // ========================================================
+      const [hariData, ayatData, teksData] = await Promise.all([
+          fetch(urlBase + "?type=hariIslam").then(r => r.json()).catch(() => []),
+          fetch(urlBase + "?type=ayatHadits").then(r => r.json()).catch(() => []),
+          fetch(urlBase + "?type=teksTambahan").then(r => r.json()).catch(() => [])
+      ]);
+
+      let slides = [];
+      let slideHariIni = null; // <- untuk slide4 jika ada diff === 0
+
+
+      // ========================================================
+      // 1. SLIDE DAFTAR HARI ISLAM (tanpa diff === 0)
+      // ========================================================
+      if (Array.isArray(hariData) && hariData.length > 0) {
+
+          let html = `
+          <div class="carousel-item">
+              <div class="finance-center-wrapper">
+                  <div class="card m-1 p-2 custom-card">
+                      <div class="card-body">
+          `;
+
+          let adaIsi = false;
+
+          hariData.forEach(row => {
+              let hari = row["Hari Islam"];
+              let pesan = row["Pesan Teks"];
+              let target = new Date(row.Gregorian);
+
+              const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+
+              // Jika hari ini → simpan untuk slide4
+              if (diff === 0) {
+                  if (!slideHariIni) {
+                      slideHariIni = {
+                          pesan: pesan,
+                          hari: hari
+                      };
+                  }
+                  return; // skip dari slide1
+              }
+
+              // Hanya tampilkan diff > 0
+              if (diff > 0 && diff <= 100) {
+                  html += `
+                      <h4>${hari}</h4>
+                      <div style="font-size:20px; font-weight:bold; color:#005a31">
+                          ${diff} hari lagi
+                      </div><br>
+                  `;
+                  adaIsi = true;
+              }
+
+          });
+
+          html += `</div></div></div></div>`;
+
+          if (adaIsi) slides.push(html);
+      }
+
+      // ========================================================
+      // 2. SLIDE AYAT / HADITS
+      // ========================================================
+      if (Array.isArray(ayatData) && ayatData.length > 0) {
+
+          const item = ayatData[Math.floor(Math.random() * ayatData.length)];
+
+          let html = `
+          <div class="carousel-item">
+              <div class="finance-center-wrapper">
+                  <div class="card m-1 p-2 custom-card">
+                      <div class="card-body">
+                          <h2>${item.Jenis} tentang ${item.Tentang}</h2>
+                          <p style="font-size:20px">${item.Isi}</p>
+                      </div>
+                  </div>
+              </div>
+          </div>`;
+
+          slides.push(html);
+      }
+
+      // ========================================================
+      // 3. SLIDE TEKS TAMBAHAN
+      // ========================================================
+      if (Array.isArray(teksData) && teksData.length > 0) {
+
+          const item = teksData[Math.floor(Math.random() * teksData.length)];
+
+          let html = `
+          <div class="carousel-item">
+              <div class="finance-center-wrapper">
+                  <div class="card m-1 p-2 custom-card">
+                      <div class="card-body">
+                          <h2>${item.Judul}</h2>
+                          <p style="font-size:20px">${item.Keterangan}</p>
+                      </div>
+                  </div>
+              </div>
+          </div>`;
+
+          slides.push(html);
+      }
+
+      // ========================================================
+      // 4. SLIDE HARI INI (jika ada diff === 0)
+      // ========================================================
+      if (slideHariIni) {
+
+          let html = `
+          <div class="carousel-item">
+              <div class="finance-center-wrapper">
+                  <div class="card m-1 p-2 custom-card">
+                      <div class="card-body" style="text-align:center">
+                          <h2>${slideHariIni.hari}</h2>
+                          <p style="font-size:22px; font-weight:bold;">
+                              ${slideHariIni.pesan}
+                          </p>
+                      </div>
+                  </div>
+              </div>
+          </div>`;
+
+          slides.push(html);
+      }
+
+
+      // ========================================================
+      // 5. JIKA SEMUA SLIDE KOSONG
+      // ========================================================
+      if (slides.length === 0) {
+          document.getElementById("financeCarouselInner").innerHTML = `
+              <div class="carousel-item active">
+                  <div class="finance-center-wrapper">
+                      <div class="card m-1 p-2 custom-card">
+                          <div class="card-body" style="text-align:center;">
+                              <h4>Tidak ada data</h4>
+                          </div>
+                      </div>
+                  </div>
+              </div>`;
+          return;
+      }
+
+      // Jadikan slide pertama ACTIVE
+      slides[0] = slides[0].replace(
+          `class="carousel-item"`,
+          `class="carousel-item active"`
+      );
+
+      document.getElementById("financeCarouselInner").innerHTML = slides.join("");
+      }
+
+
+    // ======================================
+    //   PANGGIL FUNGSI
+    // ======================================
+    fetchData(true);
+    loadFinanceSlides();
+
+
+    // --- Fungsi Jadwal Adzan Otomatis menggunakan prayTimes.js ---
+    function calculatePrayerTimesAutomatically(latitude, longitude) {
+      // Gunakan konstruktor "PrayTimes" sesuai dengan file prayTimes.js yang telah Anda unduh
+      var prayTimes = new PrayTimes();
+      prayTimes.setMethod('Kemenag');
+      var date = new Date();
+      var timezone = -date.getTimezoneOffset() / 60;
+      var times = prayTimes.getTimes(date, [latitude, longitude], timezone);
+      return {
+        imsak: times.imsak,
+        shubuh: times.fajr,
+        syuruq: times.sunrise,
+        dzuhur: times.dhuhr,
+        ashar: times.asr,
+        maghrib: times.maghrib,
+        isya: times.isha
+      };
+    }
+
+    // --- Fungsi untuk mengupdate tampilan jadwal adzan di UI ---
+    function updateJadwalAdzanUI(schedule) {
+      document.getElementById("timeImsak").innerText = schedule.imsak;
+      document.getElementById("timeShubuh").innerText = schedule.shubuh;
+      document.getElementById("timeSyuruq").innerText = schedule.syuruq;
+      document.getElementById("timeDzuhur").innerText = schedule.dzuhur;
+      document.getElementById("timeAshar").innerText = schedule.ashar;
+      document.getElementById("timeMaghrib").innerText = schedule.maghrib;
+      document.getElementById("timeIsya").innerText = schedule.isya;
+
+      highlightNextPrayer();
+    }
+
+function highlightNextPrayer() {
+  const now = new Date();
+  // Urutan default
+  let prayers = ["imsak", "shubuh", "syuruq", "dzuhur", "ashar", "maghrib", "isya"];
+  // Jika hari Jumat, ubah "dzuhur" menjadi "jumat" pada logika perhitungan
+  if (now.getDay() === 5) {
+    prayers[3] = "jumat";
+  }
+  
+  // Reset style untuk semua sel jadwal adzan
+  prayers.forEach(prayer => {
+    let elementId = prayer === "jumat" ? "timeDzuhur" : "time" + prayer.charAt(0).toUpperCase() + prayer.slice(1);
+    const cell = document.getElementById(elementId);
+    if (cell) {
+      cell.style.backgroundColor = ""; // Warna latar default dari CSS
+      cell.style.color = ""; // Warna teks default
+    }
+  });
+
+  let nextPrayer = null;
+  let nextPrayerTime = null;
+  prayers.forEach(prayer => {
+    // Jika "jumat" digunakan, ambil nilai dari jadwal "dzuhur"
+    let timeStr = adzanSchedule[prayer === "jumat" ? "dzuhur" : prayer];
+    if (timeStr) {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      const prayerTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
+      if (prayerTime < now) {
+        prayerTime.setDate(prayerTime.getDate() + 1);
+      }
+      if (nextPrayerTime === null || prayerTime < nextPrayerTime) {
+        nextPrayerTime = prayerTime;
+        nextPrayer = prayer;
+      }
+    }
+  });
+
+  if (nextPrayer) {
+    let elementId = nextPrayer === "jumat" ? "timeDzuhur" : "time" + nextPrayer.charAt(0).toUpperCase() + nextPrayer.slice(1);
+    const cell = document.getElementById(elementId);
+    if (cell) {
+      cell.style.backgroundColor = "#005a31";
+      cell.style.color = "white";
+    }
+  }
+}
+
+
+
+// --- Fungsi untuk memperbarui jadwal adzan dengan koordinat tetap ---
+function updatePrayerTimes() {
+  // Jika ada data manual tersimpan, gunakan data tersebut
+  if (localStorage.getItem('manualPrayerTimes')) {
+    return;
+  }
+
+  // Gunakan koordinat tetap (0.32, 123.4)
+  const latitude = 0.5333;
+  const longitude = 123.0667;
+
+  // Hitung jadwal adzan dengan koordinat tetap
+  var autoSchedule = calculatePrayerTimesAutomatically(latitude, longitude);
+  for (const prayer in autoSchedule) {
+    if (autoSchedule.hasOwnProperty(prayer)) {
+      const [hours, minutes] = autoSchedule[prayer].split(":").map(Number);
+      const date = new Date();
+      date.setHours(hours, minutes + 3, 0); // Tambah 2 menit
+      autoSchedule[prayer] = 
+        date.getHours().toString().padStart(2, '0') + ':' + 
+        date.getMinutes().toString().padStart(2, '0');
+    }
+  }
+
+  adzanSchedule = autoSchedule;
+  updateJadwalAdzanUI(autoSchedule);
+  highlightNextPrayer();
+}
+
+// --- Fungsi pembantu: konversi string waktu ke objek Date ---
+function timeStringToDate(timeStr) {
+  const now = new Date();
+  if (timeStr instanceof Date) {
+    return timeStr;
+  } else if (typeof timeStr === 'string') {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
+  } else {
+    const str = String(timeStr);
+    const [hours, minutes] = str.split(":").map(Number);
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
+  }
+}
+
+
+
+
+
+
+
+
+/////////// AWAL FUNGSI POPUP DAN MP3 COUNTDOWN ADZAN /////////// 
+// --- Popup dan Countdown untuk ADZAN ---
+// Fungsi untuk menampilkan popup
+function showPopupAdzan(prayer) {
+    // Jika hari Jumat dan parameter adalah "dzuhur", ubah menjadi "jumat"
+    const isJumat = (new Date().getDay() === 5 && prayer.toLowerCase() === "dzuhur");
+    if (isJumat) {
+        prayer = "jumat";
+    }
+
+    // Jika popup Adzan sedang aktif, hentikan fungsi
+    if (window.popupAdzanActive) return;
+
+    window.popupAdzanActive = true;
+
+    const popup = document.getElementById("popupAdzan");
+    const popupText = document.getElementById("popupAdzanText");
+    const popupCountdown = document.getElementById("popupCountdown");
+    const popupOverlay = document.getElementById("popupOverlay");
+
+    // Ambil durasi countdown dari variabel global atau fallback ke nilai dari form
+    let countdown = adzanCountdownDurations[prayer.toLowerCase()];
+    if (countdown === undefined || isNaN(countdown)) {
+        countdown = parseInt(document.getElementById(`${prayer.toLowerCase()}AdzanCountdown`).value);
+        if (isNaN(countdown)) countdown = 10; // default 10 menit
+    }
+    countdown *= 60; // Konversi ke detik
+
+    // Tampilkan popup dengan styling yang telah ditentukan
+    popup.classList.remove("p-3");
+    popup.classList.add("p-5", "fs-2");
+    popup.style.display = "block";
+    popupOverlay.style.display = "block";
+
+    // Set teks popup sesuai permintaan
+    popupText.innerText = "Waktu Adzan " + prayer.charAt(0).toUpperCase() + prayer.slice(1) + " segera tiba";
+
+    // Pastikan audio lain dihentikan terlebih dahulu
+    stopAllAudio();
+
+    // Tentukan audio yang akan dimainkan berdasarkan jenis adzan
+    if (prayer.toLowerCase() === "maghrib") {
+        document.getElementById("audioRadio").play();
+    } else if (prayer.toLowerCase() !== "jumat") {
+        document.getElementById("audioShalawat").play();
+    }
+
+    // Mulai interval countdown untuk mengupdate tampilan timer
+    window.adzanCountdownInterval = setInterval(() => {
+        countdown--;
+        const minutes = Math.floor(countdown / 60);
+        const seconds = countdown % 60;
+        popupCountdown.innerText = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+
+        if (countdown <= 0) {
+            clearInterval(window.adzanCountdownInterval);
+            window.adzanCountdownInterval = null;
+
+            // Hentikan audio dan kelola popup setelah countdown
+            manageAudioAndPopup(prayer, popup, popupOverlay, isJumat);
+        }
+    }, 1000);
+}
+
+// Fungsi untuk menghentikan semua audio
+function stopAllAudio() {
+    document.getElementById("audioRadio").pause();
+    document.getElementById("audioRadio").currentTime = 0;
+    document.getElementById("audioShalawat").pause();
+    document.getElementById("audioShalawat").currentTime = 0;
+    document.getElementById("audioAdzan").pause();
+    document.getElementById("audioAdzan").currentTime = 0;
+}
+
+// Fungsi untuk mengelola audio dan popup setelah countdown selesai
+function manageAudioAndPopup(prayer, popup, popupOverlay, isJumat) {
+    // Untuk Maghrib, hentikan audio radio
+    if (prayer.toLowerCase() === "maghrib") {
+        document.getElementById("audioRadio").pause();
+        document.getElementById("audioRadio").currentTime = 0;
+    }
+
+    if (isJumat) {
+        // KHUSUS JUMAT: Langsung tampilkan overlay hitam tanpa iqamah
+        let overlayDuration = (overlayBlackDurations["jumat"] || 60) * 60; // Default 60 menit jika tidak ada
+        showBlackOverlay(overlayDuration);
+
+        // Sembunyikan popup setelah 10 detik
+        setTimeout(() => {
+            popup.style.display = "none";
+            popupOverlay.style.display = "none";
+            window.popupAdzanActive = false;
+        }, 10000);
+    } else {
+        // Untuk sholat lainnya: lanjutkan ke countdown iqamah
+        document.getElementById("audioShalawat").pause();
+        document.getElementById("audioShalawat").currentTime = 0;
+        if (document.getElementById("audioAdzan").paused) {
+            document.getElementById("audioAdzan").play();
+        }
+
+        // Setelah 10 detik, sembunyikan popup dan lanjutkan ke countdown iqamah
+        setTimeout(() => {
+            popup.style.display = "none";
+            popupOverlay.style.display = "none";
+            window.popupAdzanActive = false;
+            startIqamahCountdown(prayer);
+        }, 10000);
+    }
+}
+/////////// AKHIR FUNGSI POPUP DAN MP3 COUNTDOWN ADZAN ///////////
+     
+      
+/////////// AWAL FUNGSI POPUP DAN MP3 COUNTDOWN IQAMAH ///////////
+    //COUNTDOWN IQAMAH ---
+    function startIqamahCountdown(prayer) {
+    if (window.popupIqamahActive) return;
+    window.popupIqamahActive = true;
+
+    const iqamahDiv = document.getElementById("iqamahCountdown");
+    const iqamahText = document.getElementById("iqamahText");
+    const iqamahTimer = document.getElementById("iqamahTimer");
+    const iqamahOverlay = document.getElementById("iqamahOverlay");
+
+    let countdown = iqamahCountdownDurations[prayer.toLowerCase()];
+
+    // ✅ Ambil nilai terbaru dari form jika undefined
+    if (countdown === undefined || isNaN(countdown)) {
+        countdown = parseInt(document.getElementById(`${prayer.toLowerCase()}IqamahCountdown`).value);
+        if (isNaN(countdown)) countdown = 25; // Default backup
+    }
+
+    countdown *= 60; // Konversi ke detik
+    iqamahDiv.style.display = "block";
+    iqamahOverlay.style.display = "block";
+    iqamahText.innerText = `Iqamah ${prayer} dalam:`;
+
+    window.iqamahCountdownInterval = setInterval(() => {
+        const minutes = Math.floor(countdown / 60);
+        const seconds = countdown % 60;
+        iqamahTimer.innerText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        countdown--;
+
+        // ✅ Jika sisa waktu 15 detik, beri peringatan "Harap Silent HP"
+        if (countdown === 15) {
+            document.getElementById("audioBeep").play();
+            iqamahText.innerText = "Harap Silent/Nonaktifkan HP";
+            setTimeout(() => {
+                iqamahText.innerText = "Lurus dan Rapatkan Shaf";
+            }, 7000);
+        }
+
+        if (countdown <= 0) {
+            clearInterval(window.iqamahCountdownInterval);
+            iqamahDiv.style.display = "none";
+            iqamahOverlay.style.display = "none";
+
+            // ✅ Tampilkan overlay hitam untuk persiapan shalat (15 menit, kecuali Jumat)
+            let overlayDuration = (overlayBlackDurations[prayer.toLowerCase()] || (prayer.toLowerCase() === "jumat" ? 60 : 15)) * 60;
+            showBlackOverlay(overlayDuration);
+        }
+    }, 1000);
+}
+
+/////////// AKHIR FUNGSI POPUP DAN MP3 COUNTDOWN IQAMAH ///////////
+
+
+
+////////////////////////////////////////
+function showBlackOverlay(duration) {
+        // Sembunyikan tabel adzan dan running text
+        const adzanTable = document.querySelector('.adzan-table');
+        const runningText = document.querySelector('.marquee');
+
+        if (adzanTable) adzanTable.style.display = 'none';
+        if (runningText) runningText.style.display = 'none';
+        
+        const overlay = document.getElementById("blackOverlay");
+        overlay.style.display = "block";
+
+        // Hentikan radio jika sedang diputar
+        document.getElementById("audioRadio").pause();
+        document.getElementById("audioRadio").currentTime = 0;
+        
+        let remaining = duration;
+        blackOverlayInterval = setInterval(() => {
+            remaining--;
+            updateClock(); // Pastikan clock tetap diperbarui
+            if (remaining <= 0) {
+            clearInterval(blackOverlayInterval);
+            blackOverlayInterval = null;
+            overlay.style.display = "none";
+            // Kembalikan tampilan tabel adzan dan running text
+            if (adzanTable) adzanTable.style.display = 'block';
+            // Tampilkan kembali running text dan restart animasinya
+            if (runningText) {
+                runningText.style.display = 'block';
+
+                // Clone dan ganti elemen marquee untuk mengulang animasi
+                const newRunningText = runningText.cloneNode(true);
+                runningText.parentNode.replaceChild(newRunningText, runningText);
+              }
+              location.reload();
+              highlightNextPrayer();
+
+            }
+          }, 1000);
+        }
+
+    document.getElementById("closeBlackOverlay").addEventListener("click", function() {
+        const overlay = document.getElementById("blackOverlay");
+        overlay.style.display = "none";
+        if (blackOverlayInterval) {
+            clearInterval(blackOverlayInterval);
+            blackOverlayInterval = null;
+        }
+        // Tampilkan kembali tabel adzan dan running text
+        const adzanTable = document.querySelector('.adzan-table');
+        const runningText = document.querySelector('.marquee');
+            if (adzanTable) adzanTable.style.display = 'block';
+            if (runningText) runningText.style.display = 'block';
+    });
+
+    
+
+    setInterval(() => {
+      const now = new Date();
+      Object.keys(adzanSchedule).forEach(prayer => {
+        // Ambil durasi countdown spesifik untuk setiap waktu sholat
+        let countdownDuration = adzanCountdownDurations[prayer.toLowerCase()] || 10; // Default 10 menit jika tidak ada
+        let triggerOffset = countdownDuration * 60; // Konversi menit ke detik
+        
+        let adzanTime = timeStringToDate(adzanSchedule[prayer]);
+        let diff = (adzanTime - now) / 1000; // Selisih waktu dalam detik
+        
+        // Cek jika waktu saat ini berada dalam rentang trigger
+        if(diff > (triggerOffset - 1) && diff < (triggerOffset + 1)) {
+          showPopupAdzan(prayer);
+        }
+      });
+    }, 1000);
+
+
+
+
+/////////////// AWAL FUNGSI UPDATE/EDIT WAKTU ADZAN MANUAL /////////////////////
+
+document.addEventListener('DOMContentLoaded', function() {
+  // --- SETTING WAKTU ADZAN MANUAL ---
+  const storedPrayerTimes = localStorage.getItem('manualPrayerTimes');
+  if (storedPrayerTimes) {
+    const manualTimes = JSON.parse(storedPrayerTimes);
+    document.getElementById('imsakInput').value = manualTimes.imsak;
+    document.getElementById('shubuhInput').value = manualTimes.shubuh;
+    document.getElementById('syuruqInput').value = manualTimes.syuruq;
+    document.getElementById('dzuhurInput').value = manualTimes.dzuhur;
+    document.getElementById('asharInput').value = manualTimes.ashar;
+    document.getElementById('maghribInput').value = manualTimes.maghrib;
+    document.getElementById('isyaInput').value = manualTimes.isya;
+    adzanSchedule = manualTimes;
+    updateJadwalAdzanUI(manualTimes);
+  }
+
+  document.getElementById('manualPrayerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const manualTimes = {
+      imsak: document.getElementById('imsakInput').value,
+      shubuh: document.getElementById('shubuhInput').value,
+      syuruq: document.getElementById('syuruqInput').value,
+      dzuhur: document.getElementById('dzuhurInput').value,
+      ashar: document.getElementById('asharInput').value,
+      maghrib: document.getElementById('maghribInput').value,
+      isya: document.getElementById('isyaInput').value
+    };
+    localStorage.setItem('manualPrayerTimes', JSON.stringify(manualTimes));
+    adzanSchedule = manualTimes;
+    updateJadwalAdzanUI(manualTimes);
+    // Tutup offcanvas Setting Waktu Adzan dan tampilkan Main Offcanvas Menu
+    const offcanvasAdzanEl = document.getElementById('offcanvasAdzan');
+    const bsOffcanvasAdzan = bootstrap.Offcanvas.getInstance(offcanvasAdzanEl);
+    if (bsOffcanvasAdzan) {
+      bsOffcanvasAdzan.hide();
+    }
+    bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('mainOffcanvasMenu')).show();
+  });
+
+  var offcanvasAdzan = document.getElementById('offcanvasAdzan');
+  offcanvasAdzan.addEventListener('show.bs.offcanvas', function(){
+    let storedPrayerTimes = localStorage.getItem('manualPrayerTimes');
+    let times = storedPrayerTimes ? JSON.parse(storedPrayerTimes) : adzanSchedule;
+    if (times && Object.keys(times).length > 0) {
+      document.getElementById('imsakInput').value = times.imsak || "";
+      document.getElementById('shubuhInput').value = times.shubuh || "";
+      document.getElementById('syuruqInput').value = times.syuruq || "";
+      document.getElementById('dzuhurInput').value = times.dzuhur || "";
+      document.getElementById('asharInput').value = times.ashar || "";
+      document.getElementById('maghribInput').value = times.maghrib || "";
+      document.getElementById('isyaInput').value = times.isya || "";
+    }
+  });
+
+  /////////////// AWAL FUNGSI UPDATE/EDIT WAKTU ADZAN MANUAL /////////////////////
+
+
+
+  
+  //////////  FUNGSI RUNNING TEXT //////////
+  const storedRunningText = localStorage.getItem('runningTextData');
+  if (storedRunningText) {
+    const runningTexts = JSON.parse(storedRunningText);
+    document.getElementById('newText1').value = runningTexts.newText1 || "";
+    if (runningTexts.newText2) { addNewTextInput('newText2', runningTexts.newText2); }
+    if (runningTexts.newText3) { addNewTextInput('newText3', runningTexts.newText3); }
+    updateRunningTextDisplay(runningTexts);
+  } else {
+    // Jika belum tersimpan, ambil nilai default dari marquee
+    let marqueeContent = document.getElementById('runningTextDisplay').innerText;
+    document.getElementById('newText1').value = marqueeContent;
+  }
+
+  document.getElementById('addNewTextBtn').addEventListener('click', function() {
+    let container = document.getElementById('runningTextInputs');
+    let currentCount = container.querySelectorAll('.running-text-group').length;
+    if (currentCount < 3) {
+      let newIndex = currentCount + 1;
+      // Tambahkan input untuk New Text baru (New Text 1 sudah selalu ada)
+      if(newIndex > 1) { addNewTextInput('newText' + newIndex, ""); }
+      if (container.querySelectorAll('.running-text-group').length >= 3) {
+        document.getElementById('addNewTextBtn').style.display = 'none';
+      }
+    }
+  });
+
+  document.getElementById('runningTextForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let runningTexts = {};
+    runningTexts.newText1 = document.getElementById('newText1').value;
+    let input2 = document.getElementById('newText2');
+    let input3 = document.getElementById('newText3');
+    if (input2) { runningTexts.newText2 = input2.value; }
+    if (input3) { runningTexts.newText3 = input3.value; }
+    localStorage.setItem('runningTextData', JSON.stringify(runningTexts));
+    updateRunningTextDisplay(runningTexts);
+    // Tutup offcanvas Running Text dan tampilkan Main Offcanvas Menu
+    const offcanvasRunningTextEl = document.getElementById('offcanvasRunningText');
+    const bsOffcanvasRunningText = bootstrap.Offcanvas.getInstance(offcanvasRunningTextEl);
+    if (bsOffcanvasRunningText) { bsOffcanvasRunningText.hide(); }
+    bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('mainOffcanvasMenu')).show();
+  });
+
+  var offcanvasRunningText = document.getElementById('offcanvasRunningText');
+  offcanvasRunningText.addEventListener('show.bs.offcanvas', function(){
+    let storedRunningText = localStorage.getItem('runningTextData');
+    let texts = storedRunningText ? JSON.parse(storedRunningText) : {};
+    let container = document.getElementById('runningTextInputs');
+    container.innerHTML = '';
+    let newText1Group = createTextGroup('newText1', 'New Text 1', texts.newText1 || document.getElementById('runningTextDisplay').innerText);
+    container.appendChild(newText1Group);
+    if (texts.newText2) {
+      let newText2Group = createTextGroup('newText2', 'New Text 2', texts.newText2);
+      container.appendChild(newText2Group);
+    }
+    if (texts.newText3) {
+      let newText3Group = createTextGroup('newText3', 'New Text 3', texts.newText3);
+      container.appendChild(newText3Group);
+    }
+    if (container.querySelectorAll('.running-text-group').length < 3) {
+      document.getElementById('addNewTextBtn').style.display = 'block';
+    } else {
+      document.getElementById('addNewTextBtn').style.display = 'none';
+    }
+  });
+});
+
+// Helper: buat grup input baru untuk running text
+function createTextGroup(id, labelText, value) {
+  let groupDiv = document.createElement('div');
+  groupDiv.className = 'mb-3 running-text-group';
+  groupDiv.id = id + 'Group';
+  
+  let label = document.createElement('label');
+  label.className = 'form-label';
+  label.htmlFor = id;
+  label.innerText = labelText;
+  groupDiv.appendChild(label);
+  
+  let inputDiv = document.createElement('div');
+  inputDiv.className = 'input-group';
+  
+  let input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'form-control';
+  input.id = id;
+  input.placeholder = 'Masukkan ' + labelText.toLowerCase();
+  input.required = true;
+  input.value = value;
+  inputDiv.appendChild(input);
+  
+  if (id !== 'newText1') { // Hanya tambahkan tombol hapus untuk input setelah New Text 1
+    let deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn btn-danger';
+    deleteBtn.type = 'button';
+    deleteBtn.innerText = 'Hapus';
+    deleteBtn.onclick = function() {
+      groupDiv.remove();
+      if (document.getElementById('runningTextInputs').querySelectorAll('.running-text-group').length < 3) {
+        document.getElementById('addNewTextBtn').style.display = 'block';
+      }
+    };
+    inputDiv.appendChild(deleteBtn);
+  }
+  
+  groupDiv.appendChild(inputDiv);
+  return groupDiv;
+}
+
+// Helper: tambahkan input baru ke dalam container running text
+function addNewTextInput(id, value) {
+  let container = document.getElementById('runningTextInputs');
+  let group = createTextGroup(id, 'New Text ' + id.replace('newText',''), value);
+  container.appendChild(group);
+  if (container.querySelectorAll('.running-text-group').length >= 3) {
+    document.getElementById('addNewTextBtn').style.display = 'none';
+  }
+}
+
+// Fungsi untuk meng-update tampilan marquee berdasarkan data runningTexts
+function updateRunningTextDisplay(runningTexts) {
+  const marqueeEl = document.getElementById('runningTextDisplay');
+  if (marqueeEl) {
+    let texts = [];
+    if (runningTexts.newText1) texts.push(runningTexts.newText1);
+    if (runningTexts.newText2) texts.push(runningTexts.newText2);
+    if (runningTexts.newText3) texts.push(runningTexts.newText3);
+    marqueeEl.innerText = texts.join("      |      ");
+  }
+}
+
+
+////////// FUNGSI MODE OTOMATIS / MANUAL //////////
+let autoMode = true;
+
+document.getElementById('toggleModeBtn').addEventListener('click', () => {
+  autoMode = !autoMode;
+  const btn = document.getElementById('toggleModeBtn');
+  btn.textContent = autoMode ? 'Mode Otomatis Aktif' : 'ingin Reset Waktu ?';
+  
+  if (autoMode) {
+    localStorage.removeItem('manualPrayerTimes');
+    updatePrayerTimes();
+  } else {
+    if (localStorage.getItem('manualPrayerTimes')) {
+      adzanSchedule = JSON.parse(localStorage.getItem('manualPrayerTimes'));
+      updateJadwalAdzanUI(adzanSchedule);
+    }
+  }
+});
+
+
+///////////// FUNGSI RESET WAKTU ADZAN ///////////////////////////
+function resetToAuto() {
+  localStorage.removeItem('manualPrayerTimes');
+  autoMode = true;
+  document.getElementById('toggleModeBtn').textContent = 'Mode Otomatis';
+  updatePrayerTimes();
+  bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasAdzan')).hide();
+}
+
+
+
+/////////////// AWAL FUNGSI WAKE LOCK //////////////////
+let noSleep;
+let wakeLock;
+let wakeLockInterval;
+
+function enableAggressiveWakeLock() {
+  // Method 1: NoSleep.js dengan video transparan
+  noSleep = new NoSleep();
+  noSleep.enable().catch(err => {
+    console.error('NoSleep.js error:', err);
+  });
+
+  // Method 2: Wake Lock API Modern
+  if ('wakeLock' in navigator) {
+    navigator.wakeLock.request('screen').then(wl => {
+      wakeLock = wl;
+      console.log('Wake Lock API aktif!');
+    });
+  }
+
+  // Method 3: Simulasi interaksi pengguna setiap 10 detik
+  wakeLockInterval = setInterval(() => {
+    // Simulasi touch event
+    const touchEvent = new TouchEvent('touchend', {
+      touches: [new Touch({ identifier: 'keepalive', target: document.body })],
+      bubbles: true,
+      cancelable: false
+    });
+    document.dispatchEvent(touchEvent);
+    
+    // Simulasi mouse movement
+    window.scrollBy(0, 1);
+    setTimeout(() => window.scrollBy(0, -1), 50);
+  }, 10000);
+
+  // Method 4: Video heartbeat tersembunyi
+  const stealthVideo = document.createElement('video');
+  stealthVideo.setAttribute('muted', '');
+  stealthVideo.setAttribute('playsinline', '');
+  stealthVideo.style.cssText = 'position:fixed;top:-10px;left:-10px;opacity:0;pointer-events:none;width:1px;height:1px;';
+  
+  const source = document.createElement('source');
+  source.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAVxtZGF0AAAAMg8FBv9GgZ3B+enp4XBhYWFiYWJhYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiakaaZk=';
+  source.type = 'video/mp4';
+  
+  stealthVideo.appendChild(source);
+  document.body.appendChild(stealthVideo);
+  
+  stealthVideo.play().catch(err => {
+    console.error('Video heartbeat error:', err);
+  });
+}
+
+// ==================== FULLSCREEN MANAGEMENT ====================
+function forceFullscreen() {
+  const elem = document.documentElement;
+  const fullscreenFunc = elem.requestFullscreen || 
+                        elem.mozRequestFullScreen || 
+                        elem.webkitRequestFullscreen || 
+                        elem.msRequestFullscreen;
+  
+  if (fullscreenFunc) {
+    fullscreenFunc.call(elem).catch(err => {
+      console.error('Fullscreen error:', err);
+    });
+  }
+}
+
+// ==================== PROTECTION LAYERS ====================
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    enableAggressiveWakeLock();
+    forceFullscreen();
+  }
+});
+
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    forceFullscreen();
+  }
+});
+
+// ==================== INITIALIZATION ====================
+document.addEventListener('DOMContentLoaded', () => {
+  // Delay untuk bypass TV restrictions
+  setTimeout(() => {
+    enableAggressiveWakeLock();
+    forceFullscreen();
+    
+    // Force fullscreen setiap 30 detik
+    setInterval(() => {
+      if(!document.fullscreenElement) {
+        forceFullscreen();
+      }
+    }, 30000);
+    
+    // Trigger initial interaction
+    const fakeEvent = new KeyboardEvent('keydown', {
+      key: ' ',
+      bubbles: true
+    });
+    document.dispatchEvent(fakeEvent);
+  }, 1500);
+});
+
+// ==================== FALLBACK PROTECTION ====================
+// Canvas animation sebagai cadangan
+const canvas = document.createElement('canvas');
+canvas.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;';
+document.body.appendChild(canvas);
+
+(function animate() {
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
+  ctx.fillRect(0, 0, 1, 1);
+  requestAnimationFrame(animate);
+})();
+/////////////// AKHIR FUNGSI WAKE LOCK //////////////////
+
+
+
+
+// Fungsi untuk mengonversi gambar agar kecil
+function compressImage(image) {
+  const maxWidth = 800; // Ukuran maksimum gambar
+  const maxHeight = 600; // Ukuran maksimum gambar
+  const quality = 0.7; // Kualitas gambar (0-1)
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = image;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxWidth || height > maxHeight) {
+        if (width > height) {
+          height *= maxWidth / width;
+          width = maxWidth;
+        } else {
+          width *= maxHeight / height;
+          height = maxHeight;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, 'image/jpeg', quality);
+    };
+
+    img.onerror = () => {
+      reject(new Error('Gagal memuat gambar'));
+    };
+  });
+}
+
+// Example: Compress Image function
+function compressImage(url) {
+  const maxWidth = 800; // Ukuran maksimum gambar
+  const maxHeight = 600; // Ukuran maksimum gambar
+  const quality = 0.7; // Kualitas gambar (0-1)
+
+  return fetch(url)
+    .then(response => response.blob()) // Ambil gambar sebagai blob
+    .then(blob => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(blob);
+        
+        img.onload = function () {
+          // Buat canvas untuk menggambar gambar yang telah dikompresi
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          let width = img.width;
+          let height = img.height;
+
+          // Periksa apakah ukuran gambar melebihi batas yang ditentukan
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            } else {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+
+          // Tentukan ukuran canvas sesuai ukuran gambar yang diubah
+          canvas.width = width;
+          canvas.height = height;
+
+          // Gambar gambar pada canvas
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Konversi canvas ke gambar terkompresi (Blob)
+          canvas.toBlob(function (compressedBlob) {
+            resolve(compressedBlob); // Kembalikan gambar terkompresi dalam bentuk Blob
+          }, 'image/jpeg', quality); // Format JPEG dengan kualitas 70%
+        };
+        
+        img.onerror = function () {
+          reject(new Error("Gagal memuat gambar untuk kompresi"));
+        };
+        
+        img.src = objectUrl; // Atur sumber gambar
+      });
+    });
+}
+
+// Example usage of compressImage in your fetch call
+fetch(appsScriptUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(data)
+    })
+  .then(response => response.json())
+  .then(data => {
+    let innerHtml = ''; // To accumulate the images
+    data.DataMedia.forEach((item, index) => {
+      if (item.Media.toLowerCase() === "gambar") {
+        compressImage(item.Url)
+          .then((blob) => {
+            const url = URL.createObjectURL(blob); // Create URL from blob
+            innerHtml += `<img src="${url}" class="d-block w-100" alt="Slide ${index + 1}">`;
+            document.getElementById('imageContainer').innerHTML = innerHtml; // Add images to the page
+          })
+          .catch((error) => {
+            console.error('Gagal mengonversi gambar:', error);
+          });
+      }
+    });
+  })
+  .catch(err => {
+    console.error("Error fetching data:", err);
+  });
+
+
+
+  // Fungsi pembantu untuk memformat sisa waktu (mm:ss)
+  function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+    const seconds = String(totalSeconds % 60).padStart(2, '0');
+    return minutes + ":" + seconds;
+  }
+
+  // Fungsi umum untuk memulai countdown dan menyimpannya di localStorage
+  // popupId: id elemen popup (misal "popupAdzan" atau "iqamahCountdown")
+  // timerId: id elemen untuk menampilkan sisa waktu (misal "popupCountdown" atau "iqamahTimer")
+  // duration: durasi countdown (detik)
+  // storageKey: kunci localStorage (misal "adzanCountdownEnd" atau "iqamahCountdownEnd")
+  function startPersistentCountdown(popupId, timerId, duration, storageKey) {
+    const endTime = Date.now() + duration * 1000;
+    localStorage.setItem(storageKey, endTime);
+
+    const popup = document.getElementById(popupId);
+    if (popup) {
+      popup.style.display = "block";
+    }
+
+    function updateCountdown() {
+      const remaining = localStorage.getItem(storageKey) - Date.now();
+      if (remaining > 0) {
+        document.getElementById(timerId).innerText = formatTime(remaining);
+        requestAnimationFrame(updateCountdown);
+      } else {
+        document.getElementById(timerId).innerText = "00:00";
+        if (popup) {
+          popup.style.display = "none";
+        }
+        localStorage.removeItem(storageKey);
+      }
+    }
+
+    updateCountdown();
+  }
+
+  // Fungsi untuk melanjutkan countdown yang tersimpan (dipanggil saat halaman dimuat)
+  function resumePersistentCountdown(popupId, timerId, storageKey) {
+    const storedEndTime = localStorage.getItem(storageKey);
+    if (storedEndTime && storedEndTime > Date.now()) {
+      const popup = document.getElementById(popupId);
+      if (popup) {
+        popup.style.display = "block";
+      }
+
+      function updateCountdown() {
+        const remaining = storedEndTime - Date.now();
+        if (remaining > 0) {
+          document.getElementById(timerId).innerText = formatTime(remaining);
+          requestAnimationFrame(updateCountdown);
+        } else {
+          document.getElementById(timerId).innerText = "00:00";
+          if (popup) {
+            popup.style.display = "none";
+          }
+          localStorage.removeItem(storageKey);
+        }
+      }
+
+      updateCountdown();
+    }
+  }
+
+  // Fungsi khusus untuk overlay black (tanpa tampilan timer, namun bisa ditambahkan jika perlu)
+  function startBlackOverlay(duration) {
+    const endTime = Date.now() + duration * 1000;
+    localStorage.setItem("blackOverlayEnd", endTime);
+
+    const overlay = document.getElementById("blackOverlay");
+    if (overlay) {
+      overlay.style.display = "block";
+    }
+
+    function updateOverlay() {
+      const remaining = localStorage.getItem("blackOverlayEnd") - Date.now();
+      if (remaining > 0) {
+        requestAnimationFrame(updateOverlay);
+      } else {
+        if (overlay) {
+          overlay.style.display = "none";
+        }
+        localStorage.removeItem("blackOverlayEnd");
+      }
+    }
+
+    updateOverlay();
+  }
+
+  // Saat halaman dimuat, resume countdown (jika masih aktif)
+  document.addEventListener("DOMContentLoaded", function() {
+    resumePersistentCountdown("popupAdzan", "popupCountdown", "adzanCountdownEnd");
+    resumePersistentCountdown("iqamahCountdown", "iqamahTimer", "iqamahCountdownEnd");
+
+    const blackOverlayEnd = localStorage.getItem("blackOverlayEnd");
+    if (blackOverlayEnd && blackOverlayEnd > Date.now()) {
+      const overlay = document.getElementById("blackOverlay");
+      if (overlay) {
+        overlay.style.display = "block";
+      }
+      
+      function updateOverlay() {
+        const remaining = blackOverlayEnd - Date.now();
+        if (remaining > 0) {
+          requestAnimationFrame(updateOverlay);
+        } else {
+          if (overlay) {
+            overlay.style.display = "none";
+          }
+          localStorage.removeItem("blackOverlayEnd");
+        }
+      }
+      updateOverlay();
+    }
+  });
+
+
+</script>
+</body>
+</html>

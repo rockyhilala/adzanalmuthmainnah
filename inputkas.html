@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pengaturan Aplikasi Adzan</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .settings-section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #005a4b;
+      margin-bottom: 20px;
+    }
+    .frame {
+      width: 500px;
+      height: 500px;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .pagination-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="frame">
+    <h3 class="text-center mb-4">Pengaturan Aplikasi Adzan</h3>
+        <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#dataMasjidModal" style="background-color: #005a4b;">
+            Data Masjid
+            </button>
+        </div>
+        <div class="col-md-12 mt-1">
+            <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#dataKasModal">
+              Data Kas
+            </button>
+        </div>
+        <div class="col-md-12 mt-1">
+            <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#waktuAdzanManualModal">
+            Waktu Adzan Manual
+            </button>
+        </div>
+        <div class="col-md-12 mt-1">
+            <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#runningTextModal">
+            Running Text
+            </button>
+        </div>
+        <div class="col-md-12 mt-1">
+            <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#durasiCountdownAdzanModal">
+            Durasi Countdown Adzan
+            </button>
+        </div>
+        <div class="col-md-12 mt-1">
+            <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#durasiCountdownIqamahModal">
+            Durasi Countdown Iqamah
+            </button>
+        </div>
+        <div class="col-md-12 mt-1">
+            <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#durasiOverlayHitamModal">
+            Durasi Overlay Hitam
+            </button>
+        </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Modal Data Masjid -->
+  <div class="modal fade" id="dataMasjidModal" tabindex="-1" aria-labelledby="dataMasjidModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="dataMasjidModalLabel">Data Masjid</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Data Masjid -->
+          <form id="masjidDataForm">
+            <div class="mb-3">
+              <label for="logoInput" class="form-label">Logo Masjid</label>
+              <input type="file" class="form-control" id="logoInput" accept="image/*">
+              <div id="logoPreview" class="mt-2"></div>
+            </div>
+            <div class="mb-3">
+              <label for="namaMasjidInput" class="form-label">Nama Masjid</label>
+              <input type="text" class="form-control" id="namaMasjidInput" required>
+            </div>
+            <div class="mb-3">
+              <label for="alamatMasjidInput" class="form-label">Alamat Masjid</label>
+              <textarea class="form-control" id="alamatMasjidInput" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <button type="button" class="btn btn-danger" id="resetMasjidData">Reset</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal Data Kas -->
+<div class="modal fade" id="dataKasModal" tabindex="-1" aria-labelledby="dataKasModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="dataKasModalLabel">Data Kas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Form Data Kas -->
+        <form id="dataKasForm">
+          <div class="mb-3">
+            <label for="namaKas" class="form-label">Nama Kas</label>
+            <select class="form-select" id="namaKas" required>
+              <option value="">Pilih...</option>
+              <option value="Uang Masuk">Uang Masuk</option>
+              <option value="Uang Keluar">Uang Keluar</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="tanggal" class="form-label">Tanggal</label>
+            <input type="date" class="form-control" id="tanggal" required>
+          </div>
+          <div class="mb-3">
+            <label for="keterangan" class="form-label">Keterangan</label>
+            <input type="text" class="form-control" id="keterangan" required>
+          </div>
+          <div class="mb-3">
+            <label for="jumlah" class="form-label">Jumlah</label>
+            <input type="number" class="form-control" id="jumlah" required>
+          </div>
+          <!-- Hidden field untuk row index (digunakan saat edit) -->
+          <input type="hidden" id="rowIndex">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+        </form>
+        <div id="message" class="mt-3"></div>
+
+
+          <hr>
+          <h2>Data Keuangan Masjid</h2>
+      <!-- Pagination Controls -->
+      <div class="pagination-controls">
+          <div>
+            Tampilkan 
+            <select id="rowsPerPageSelect" class="form-select d-inline-block" style="width: auto;">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+            </select>
+            baris
+          </div>
+          <div>
+            <button class="btn btn-sm btn-secondary" id="prevPageBtn">&lt;</button>
+            <span id="pageInfo"></span>
+            <button class="btn btn-sm btn-secondary" id="nextPageBtn">&gt;</button>
+          </div>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-bordered" id="dataTabelTable">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Nama Kas</th>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th>Jumlah</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="dataTabelBody">
+              <!-- Data akan diisi secara dinamis -->
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Toast Container -->
+      <div class="toast-container position-fixed bottom-0 end-0 p-3">
+          <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+              <div class="toast-body" id="toastBody">
+              </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+          </div>
+        </div>
+      
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Waktu Adzan Manual -->
+  <div class="modal fade" id="waktuAdzanManualModal" tabindex="-1" aria-labelledby="waktuAdzanManualModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="waktuAdzanManualModalLabel">Waktu Adzan Manual</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Waktu Adzan Manual -->
+          <form id="manualPrayerForm">
+            <div class="row g-3">
+                <div class="mb-3">
+                  <label for="isyaInput" class="form-label">Isya</label>
+                  <input type="time" class="form-control" id="isyaInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="imsakInput" class="form-label">Imsak</label>
+                    <input type="time" class="form-control" id="imsakInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="shubuhInput" class="form-label">Shubuh</label>
+                    <input type="time" class="form-control" id="shubuhInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="syuruqInput" class="form-label">Syuruq</label>
+                    <input type="time" class="form-control" id="syuruqInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="dzuhurInput" class="form-label">Dzuhur</label>
+                    <input type="time" class="form-control" id="dzuhurInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="asharInput" class="form-label">Ashar</label>
+                    <input type="time" class="form-control" id="asharInput" required>
+                </div>
+                <div class="mb-3">
+                    <label for="maghribInput" class="form-label">Maghrib</label>
+                    <input type="time" class="form-control" id="maghribInput" required>
+                </div>
+                </div>
+                <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-danger" onclick="resetToAuto()">Reset ke Otomatis</button>
+                </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Running Text -->
+  <div class="modal fade" id="runningTextModal" tabindex="-1" aria-labelledby="runningTextModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="runningTextModalLabel">Running Text</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Running Text -->
+          <form id="runningTextForm">
+            <div id="runningTextInputs">
+              <div class="mb-3 running-text-group">
+                <label for="newText1" class="form-label">Text 1</label>
+                <input type="text" class="form-control" id="newText1" required>
+              </div>
+            </div>
+            <button type="button" class="btn btn-info mb-3" id="addNewTextBtn">Tambah Text</button>
+            <button type="submit" class="btn btn-primary mb-3">Update</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Durasi Countdown Adzan -->
+  <div class="modal fade" id="durasiCountdownAdzanModal" tabindex="-1" aria-labelledby="durasiCountdownAdzanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="durasiCountdownAdzanModalLabel">Durasi Countdown Adzan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Durasi Countdown Adzan -->
+          <form id="countdownForm">
+            <div class="mb-3">
+              <label for="isyaCountdown" class="form-label">Isya (menit)</label>
+              <input type="number" class="form-control" id="isyaCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="imsakCountdown" class="form-label">Imsak (menit)</label>
+              <input type="number" class="form-control" id="imsakCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="shubuhCountdown" class="form-label">Shubuh (menit)</label>
+              <input type="number" class="form-control" id="shubuhCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="syuruqCountdown" class="form-label">Syuruq (menit)</label>
+              <input type="number" class="form-control" id="syuruqCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="dzuhurCountdown" class="form-label">Dzuhur (menit)</label>
+              <input type="number" class="form-control" id="dzuhurCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="asharCountdown" class="form-label">Ashar (menit)</label>
+              <input type="number" class="form-control" id="asharCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="maghribCountdown" class="form-label">Maghrib (menit)</label>
+              <input type="number" class="form-control" id="maghribCountdown">
+            </div>
+            <!-- Tambahkan input untuk waktu lainnya -->
+            <button type="submit" class="btn btn-primary">Update</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Durasi Countdown Iqamah -->
+  <div class="modal fade" id="durasiCountdownIqamahModal" tabindex="-1" aria-labelledby="durasiCountdownIqamahModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="durasiCountdownIqamahModalLabel">Durasi Countdown Iqamah</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Durasi Countdown Iqamah -->
+          <form id="iqamahCountdownForm">
+            <div class="mb-3">
+              <label for="isyaIqamahCountdown" class="form-label">Isya (menit)</label>
+              <input type="number" class="form-control" id="isyaIqamahCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="imsakIqamahCountdown" class="form-label">Imsak (menit)</label>
+              <input type="number" class="form-control" id="imsakIqamahCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="shubuhIqamahCountdown" class="form-label">Shubuh (menit)</label>
+              <input type="number" class="form-control" id="shubuhIqamahCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="syuruqIqamahCountdown" class="form-label">Syuruq (menit)</label>
+              <input type="number" class="form-control" id="syuruqIqamahCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="dzuhurIqamahCountdown" class="form-label">Dzuhur (menit)</label>
+              <input type="number" class="form-control" id="dzuhurIqamahCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="asharIqamahCountdown" class="form-label">Ashar (menit)</label>
+              <input type="number" class="form-control" id="asharIqamahCountdown">
+            </div>
+            <div class="mb-3">
+              <label for="magribIqamahCountdown" class="form-label">Maghrib (menit)</label>
+              <input type="number" class="form-control" id="magribIqamahCountdown">
+            </div>
+            <!-- Tambahkan input untuk waktu lainnya -->
+            <button type="submit" class="btn btn-primary">Update</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Durasi Overlay Hitam -->
+  <div class="modal fade" id="durasiOverlayHitamModal" tabindex="-1" aria-labelledby="durasiOverlayHitamModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="durasiOverlayHitamModalLabel">Durasi Overlay Hitam</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form Durasi Overlay Hitam -->
+          <form id="blackOverlayForm">
+            <div class="row g-3">
+              <div class="mb-3">
+                <label for="isyaOverlay" class="form-label">Isya (menit)</label>
+                <input type="number" class="form-control" id="isyaOverlay">
+              </div>
+              <div class="mb-3">
+                <label for="imsakOverlay" class="form-label">Imsak (menit)</label>
+                <input type="number" class="form-control" id="imsakOverlay">
+              </div>
+              <div class="mb-3">
+                <label for="shubuhOverlay" class="form-label">Shubuh (menit)</label>
+                <input type="number" class="form-control" id="shubuhOverlay">
+              </div>
+              <div class="mb-3">
+                <label for="syuruqOverlay" class="form-label">Syuruq (menit)</label>
+                <input type="number" class="form-control" id="syuruqOverlay">
+              </div>
+              <div class="mb-3">
+                <label for="dzuhurOverlay" class="form-label">Dzuhur (menit)</label>
+                <input type="number" class="form-control" id="dzuhurOverlay">
+              </div>
+              <div class="mb-3">
+                <label for="asharOverlay" class="form-label">Ashar (menit)</label>
+                <input type="number" class="form-control" id="asharOverlay">
+              </div>
+              <div class="mb-3">
+                <label for="maghribOverlay" class="form-label">Magrib (menit)</label>
+                <input type="number" class="form-control" id="maghribOverlay">
+              </div>
+              <!-- Tambahkan input untuk waktu lainnya -->
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Update</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Ganti URL Apps Script dengan URL milik lo
+    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzR8JDaHWZOoLgh4YUMMGhHDSlCMMs0JN-v63UFEO1bRkkBYGHthayF36pLR3XXttYzkQ/exec";
+
+    // Global variabel untuk data dan pagination
+// Global variables untuk data dan pagination
+let allDataTabel = [];
+let currentPage = 1;
+let rowsPerPage = Number(document.getElementById('rowsPerPageSelect').value);
+
+// Fungsi format Rupiah
+function formatRupiah(angka) {
+  return "Rp. " + Number(angka).toLocaleString('id-ID');
+}
+
+// Fungsi format Tanggal, contoh: "Rabu, 05 Maret 2025"
+function formatTanggal(tanggalStr) {
+  let d = new Date(tanggalStr);
+  let options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' };
+  return d.toLocaleDateString('id-ID', options);
+}
+
+// Fungsi untuk fetch data dari spreadsheet dan urutkan berdasarkan tanggal (terbaru di atas)
+function fetchDataTabel() {
+  fetch(appsScriptUrl)
+    .then(response => response.json())
+    .then(data => {
+      if(data.DataTabel) {
+        // Map data, simpan informasi sheetRow jika diperlukan (header ada di row 1, data mulai dari row 2)
+        allDataTabel = data.DataTabel.map((item, index) => {
+          item.sheetRow = index + 2;
+          return item;
+        });
+        // Urutkan descending berdasarkan tanggal
+        allDataTabel.sort((a, b) => new Date(b["Tanggal"]) - new Date(a["Tanggal"]));
+        currentPage = 1;
+        updateTable();
+      }
+    })
+    .catch(err => {
+      console.error("Error fetching DataTabel:", err);
+    });
+}
+
+// Fungsi untuk update tampilan tabel sesuai pagination
+function updateTable() {
+  const tbody = document.getElementById('dataTabelBody');
+  tbody.innerHTML = "";
+  
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const pageData = allDataTabel.slice(start, end);
+  
+  pageData.forEach((item, i) => {
+    const tr = document.createElement('tr');
+    // Nomor row di tampilan halaman dimulai dari 1 untuk halaman pertama, 1 + offset untuk halaman selanjutnya
+    tr.innerHTML = `
+      <td>${start + i + 1}</td>
+      <td>${item["Nama Kas"]}</td>
+      <td>${formatTanggal(item["Tanggal"])}</td>
+      <td>${item["Keterangan"]}</td>
+      <td>${formatRupiah(item["Jumlah"])}</td>
+      <td>
+        <button class="btn btn-sm btn-warning" onclick="editData(${item.sheetRow}, '${item["Nama Kas"]}', '${item["Tanggal"]}', '${item["Keterangan"]}', '${item["Jumlah"]}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteData(${item.sheetRow})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+  
+  const totalPages = Math.ceil(allDataTabel.length / rowsPerPage);
+  document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${totalPages}`;
+  document.getElementById('prevPageBtn').disabled = currentPage === 1;
+  document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+}
+
+// Event listener untuk dropdown rows per page
+document.getElementById('rowsPerPageSelect').addEventListener('change', function() {
+  rowsPerPage = Number(this.value);
+  currentPage = 1;
+  updateTable();
+});
+
+// Event listener untuk tombol Previous
+document.getElementById('prevPageBtn').addEventListener('click', function() {
+  if(currentPage > 1) {
+    currentPage--;
+    updateTable();
+  }
+});
+
+// Event listener untuk tombol Next
+document.getElementById('nextPageBtn').addEventListener('click', function() {
+  const totalPages = Math.ceil(allDataTabel.length / rowsPerPage);
+  if(currentPage < totalPages) {
+    currentPage++;
+    updateTable();
+  }
+});
+
+// Fungsi untuk reset form input
+function resetForm() {
+  document.getElementById('dataKasForm').reset();
+  document.getElementById('rowIndex').value = "";
+  document.getElementById('submitBtn').innerText = "Submit";
+}
+
+// Event listener untuk tombol cancel
+document.getElementById('cancelBtn').addEventListener('click', function() {
+  resetForm();
+});
+
+// Fungsi untuk menampilkan pesan
+function showMessage(msg, type = 'success') {
+  document.getElementById('message').innerHTML = `<div class="alert alert-${type}" role="alert">${msg}</div>`;
+  setTimeout(() => {
+    document.getElementById('message').innerHTML = "";
+  }, 3000);
+}
+
+// Event listener untuk submit form (Create atau Update)
+document.getElementById('dataKasForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const rowIndex = document.getElementById('rowIndex').value;
+  const data = {
+    namaKas: document.getElementById('namaKas').value,
+    tanggal: document.getElementById('tanggal').value,
+    keterangan: document.getElementById('keterangan').value,
+    jumlah: document.getElementById('jumlah').value
+  };
+
+  if(rowIndex) {
+    // Update data
+    data.type = "updateDatatabel";
+    data.rowIndex = Number(rowIndex);
+    fetch(appsScriptUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      showMessage("Data berhasil diupdate");
+      resetForm();
+      fetchDataTabel();
+    })
+    .catch(err => {
+      console.error("Error updating data:", err);
+      showMessage("Gagal update data", "danger");
+    });
+  } else {
+    // Create data baru
+    data.type = "datatabel";
+    fetch(appsScriptUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      showMessage("Data berhasil ditambahkan");
+      resetForm();
+      fetchDataTabel();
+    })
+    .catch(err => {
+      console.error("Error adding data:", err);
+      showMessage("Gagal menambahkan data", "danger");
+    });
+  }
+});
+
+// Fungsi untuk edit data: mengisi form dengan data yang dipilih dan scroll ke form
+function editData(rowIndex, namaKas, tanggal, keterangan, jumlah) {
+  document.getElementById('rowIndex').value = rowIndex;
+  document.getElementById('namaKas').value = namaKas;
+  document.getElementById('tanggal').value = formatDateForInput(tanggal);
+  document.getElementById('keterangan').value = keterangan;
+  document.getElementById('jumlah').value = jumlah;
+  document.getElementById('submitBtn').innerText = "Update";
+  document.getElementById('cancelEditBtn').style.display = "inline-block";
+  document.getElementById('dataTabelForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function formatDateForInput(tanggalStr) {
+  let d = new Date(tanggalStr);
+  let year = d.getFullYear();
+  let month = (d.getMonth() + 1).toString().padStart(2, '0');
+  let day = d.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Fungsi untuk delete data
+function deleteData(rowIndex) {
+  if(confirm("Yakin mau hapus data pada baris " + rowIndex + "?")) {
+    fetch(appsScriptUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify({ type: "deleteDatatabel", rowIndex: rowIndex })
+    })
+    .then(() => {
+      showMessage("Data berhasil dihapus");
+      fetchDataTabel();
+    })
+    .catch(err => {
+      console.error("Error deleting data:", err);
+      showMessage("Gagal hapus data", "danger");
+    });
+  }
+}
+
+// Panggil fetchDataTabel saat halaman dimuat
+fetchDataTabel();
+
+function showMessage(msg, type = 'success') {
+  const toastEl = document.getElementById('liveToast');
+  const toastBody = document.getElementById('toastBody');
+  toastBody.innerText = msg;
+  
+  // Reset kelas, kemudian tambahkan kelas sesuai tipe pesan
+  toastEl.className = "toast align-items-center text-white border-0";
+  if (type === 'success') {
+    toastEl.classList.add("bg-success");
+  } else if (type === 'danger') {
+    toastEl.classList.add("bg-danger");
+  } else {
+    toastEl.classList.add("bg-secondary");
+  }
+  
+  // Tampilkan toast menggunakan Bootstrap
+  var toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}
+
+
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
